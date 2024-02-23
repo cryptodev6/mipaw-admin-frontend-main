@@ -1,0 +1,29 @@
+:root{
+  --primary-color:#2a3d55;
+}
+
+body{
+	background: url(../../../public/images/login-banner.webp);
+}
+
+.admin-login {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+.login-wrapper {
+  background-color: #fff;
+  width: 40%;
+  margin: 0 auto;
+}
+.login-wrapper .form-label {
+  width: 100%;
+}
+.login-wrapper input[type="text"], 
+.login-wrapper input[type="password"]{
+  width: 100%;
+}
+.login-wrapper input[type="submit"]{
+  background: var(--primary-color);
+  border: none;
+}
