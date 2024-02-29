@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Dashboard",
+    "icon" : "iconsminds-shop-4",
+    "id" : "dashboard",
+    "resource" : "Dashboard",
+    "sub" : [
+      {
+          "title" : "Dashboard" ,
+          "icon" : "simple-icon-pie-chart",
+          "route": "store.dashboard",
+          "resource" : "Dashboard"
+      } 
+    ]
+  },
+  {
+    "title" : "Products",
+    "id" : "products",
+    "resource" : "Products",
+    "icon" : "iconsminds-digital-drawing",
+    "sub" : [
+      {
+          "title" : "All products",
+          "icon" : "iconsminds-air-balloon-1",
+          "route" : "store.product",
+          "resource" : "Products"
+      } ,
+      {
+          "title" : "Add product" ,
+          "icon" : "simple-icon-rocket",
+          "route" : "store.productForm",
+          "resource" : "Products"
+      },
+      {
+        "title" : "View category" ,
+        "icon" : "simple-icon-note",
+        "route" : "store.category",
+        "resource" : "Category"
+      }
+    ]
+  } ,
+  {
+    "title" : "Orders",
+    "id" : "orders",
+    "icon" : "iconsminds-three-arrow-fork",
+    "resource" : "Installment Orders" ,
+    "sub" : [
+      {
+        "title" : "All orders" ,
+        "icon" : "iconsminds-bucket",
+        "route" : "store.order",
+        "resource" : "Installment Orders"
+      },
+      {
+        "title" : "Add order",
+        "icon" : "simple-icon-pie-chart",
+        "route" : "store.orderform",
+        "resource" : "Installment Orders"
+      },
+      {
+        "title" : "View users",
+        "icon" : "iconsminds-library",
+        "route" : "store.client",
+        "resource" : "Clients"
+      },
+      {
+        "title" : "Add user",
+        "icon" : "simple-icon-rocket",
+        "route" : "store.clientform",
+        "resource" : "Clients"
+      }
+    ]
+  }
+]
