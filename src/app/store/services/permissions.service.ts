@@ -21,14 +21,14 @@ export class PermissionService {
         this.token = token;
         if(this.token)
           {
-            let decodedToken =  jwt_decode(this.token)
+            let decodedToken =  (jwt_decode as any)(this.token)
             console.log("gonna set the new token in permission service" , decodedToken);
             //Now we have all the resources permitted for this user
             this.resources = decodedToken.resources || [];
           }
         })
       }else{
-        let decodedToken =  jwt_decode(token)
+        let decodedToken =  (jwt_decode as any)(token)
         // console.log("gonna set the new token in permission service" , decodedToken);
         //Now we have all the resources permitted for this user
         this.resources = decodedToken.resources || [];

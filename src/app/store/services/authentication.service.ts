@@ -37,7 +37,7 @@ export class AuthenticationService {
     try{
       let token = localStorage.getItem('access_token')
       console.log("In store new token in auth service refresh ::"   , token )
-      console.log("Refresh token " , jwt_decode(token) )
+      console.log("Refresh token " , (jwt_decode as any)(token) )
       this.currentUserSubject.next(token)
       this._rootAuthService.refreshToken();
     }catch(err){
@@ -56,7 +56,7 @@ export class AuthenticationService {
                 localStorage.setItem('access_token' , resp.token)
                 this._rootAuthService.refreshToken();
               }
-            console.log("New token recieved" , jwt_decode(that.currentUserSubject.value) )
+            console.log("New token recieved" , (jwt_decode as any)(that.currentUserSubject.value) )
         } ,
         err=>{
           console.log("While requesting error" , err)

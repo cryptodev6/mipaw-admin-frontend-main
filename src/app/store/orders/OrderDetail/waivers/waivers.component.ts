@@ -7,12 +7,10 @@ import { FormBuilder , FormGroup , FormArray  , FormControl , Validators  } from
 import { DataTableDirective } from 'angular-datatables';
 import { HttpClient , HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { financeService } from './../../../services/finance.service';
 import { NotifierService } from "angular-notifier";
 import { PermissionService } from "@services/permissions.service";
 import { orderService } from '@services/order.service';
 import { UserService } from '@services/user.service';
-import { WaiverService } from '@services/waiver.service';
 
 declare var contextMenu: any;
 
@@ -59,10 +57,9 @@ export class WaiversComponent implements AfterViewInit, OnInit  {
   updatedValues : any;
 
   constructor (private http:HttpClient , private fb:FormBuilder ,
-    private datePipe : DatePipe , private _financeService : financeService,
+    private datePipe : DatePipe ,
     private notifier : NotifierService , public _permService : PermissionService ,
-    private _orderService : orderService , private _userService : UserService ,
-    private _waiverService : WaiverService ){
+    private _orderService : orderService , private _userService : UserService ){
   }
   ngOnInit(){
     let that = this ;
@@ -94,14 +91,6 @@ export class WaiversComponent implements AfterViewInit, OnInit  {
   }
   fetchApprovalAuthorities(){
     let that = this;
-    this._waiverService
-      .getAllApprovalAuthorities()
-      .subscribe(response => {
-        console.log("Approval authorities" , response )
-        that.approvalAuthorties = response.data;
-      } , err => {
-        console.log("Approval authorities error" , err )
-      });
   }
   formSubmitted()
   {
@@ -110,20 +99,6 @@ export class WaiversComponent implements AfterViewInit, OnInit  {
     console.log("Form of waivers which is gonna submit is" , formData)
     let that = this;
     this.beingAdded = true ;
-
-    this._waiverService.create(formData)
-      .subscribe(response => {
-        that.fetchInfo(false)
-        // that.rerender();
-        that.beingAdded = false;
-        this.WaiverForm.reset();
-        //informing parent that data has changed
-        this.newData.emit();
-        that.notifier.notify("success" , "Waiver successfuly added.");
-    } , error=>{
-      that.beingAdded = false;
-      that.notifier.notify("error" , error.error.error ? error.error.error : error.error.message);
-    })
   }
   ngAfterViewInit() : void {
 
@@ -198,30 +173,6 @@ export class WaiversComponent implements AfterViewInit, OnInit  {
   }
   fetchInfo(isFirstTime): void{
     let that = this
-    //dataTable
-    this._waiverService.getOrderWaivers( this.order_id)
-      .subscribe(result=>{
-        console.log("Response from the installments module" , result)
-        that.waiverList =  result;
-        if(isFirstTime)
-          that.dtTrigger.next();
-        else
-            that.rerender();
-          //setting up the edit functionality
-        setTimeout(() => {
-            $("#instlmntTbl tr:has(td)").hover(function(e) {
-              $(this).css("cursor", "pointer");
-              $("#instlmntTbl tr:has(td)").addClass('blur');
-              $(this).removeClass('blur');
-              $(this).addClass('highlight');
-            },
-            function(e) {
-              $("#instlmntTbl tr:has(td)").removeClass('blur highlight');
-            });
-        }, 400);
-    } , error=>{
-      console.log("error from the installment module" , error)
-    })
   }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
@@ -339,26 +290,6 @@ export class WaiversComponent implements AfterViewInit, OnInit  {
         $('#installmentEditModal').modal('hide');
         return;
       }
-
-      //Send the edit request to server
-      this._financeService
-        .update(this.EditWaiverId , this.updatedValues )
-          .subscribe(resp=>{
-            this.notifier.notify("success" , "Installment has been updated.");
-            this.beingEditFormSubmit = false;
-
-            //installment edit modal open
-            $('#installmentEditModal').modal('hide');
-
-            //Referesh the data as well
-            //informing parent that data has changed
-            this.newData.emit();
-
-          } , err=>{
-            console.log("Installment edit form" , err)
-            this.notifier.notify("error" , err.error.error);
-            this.beingEditFormSubmit = false;
-          })
     }
 
     //Get the updated form control values only

@@ -16,8 +16,6 @@ import { MomentModule } from 'angular2-moment';
 import { NotifierModule , NotifierOptions } from "angular-notifier";
 import { ProgressBarModule } from "angular-progress-bar";
 
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-const config: SocketIoConfig = {  url: environment.socketOptions.url, options: environment.socketOptions.options };
 
 //***************::Helpers ::***************************//
 import { JwtInterceptor } from "@/helpers/jwt.interceptor";
@@ -43,12 +41,6 @@ import { NgQrScannerModule } from 'ngx-qr'; //scanner
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 
 //**************:: Redux Store ::*********************//
-import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from '@reducers/index';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { EffectsModule } from '@ngrx/effects';
-import { CashOrderEffects , DashboadEffects , ProductEffects} from '@/Redux/effects/index.effects';
-import { InventoryEffects } from './Redux/effects/inventory.effect';
 
 @NgModule({
   declarations: [
@@ -68,12 +60,7 @@ import { InventoryEffects } from './Redux/effects/inventory.effect';
     MomentModule ,
     ProgressBarModule,
     NgQrScannerModule ,
-    NgxQRCodeModule ,
-    SocketIoModule.forRoot(config),
-    StoreModule.forRoot(reducers, { metaReducers }),
-    !environment.production ? StoreDevtoolsModule.instrument() : [] ,
-    EffectsModule.forRoot([CashOrderEffects , DashboadEffects , ProductEffects , InventoryEffects]) ,
-
+    NgxQRCodeModule 
   ],
   providers: [
     { provide : HTTP_INTERCEPTORS , useClass : JwtInterceptor , multi : true },

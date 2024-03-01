@@ -7,7 +7,6 @@ import { FormBuilder , FormGroup , FormArray  , FormControl , Validators  } from
 import { DataTableDirective } from 'angular-datatables';
 import { HttpClient , HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { financeService } from './../../../services/finance.service';
 import { NotifierService } from "angular-notifier";
 import { PermissionService } from "@services/permissions.service";
 import { isThisSecond } from 'date-fns';
@@ -56,7 +55,7 @@ export class InstallmentsComponent implements AfterViewInit, OnInit  {
   updatedValues : any;
 
   constructor (private http:HttpClient , private fb:FormBuilder ,
-    private datePipe : DatePipe , private _financeService : financeService,
+    private datePipe : DatePipe ,
     private notifier : NotifierService , public _permService : PermissionService){
   }
   ngOnInit(){
@@ -89,19 +88,6 @@ export class InstallmentsComponent implements AfterViewInit, OnInit  {
     let that = this;
     this.beingAdded = true ;
 
-    this._financeService.create(formData).subscribe(response => {
-      that.fetchInfo(false)
-      // that.rerender();
-      that.beingAdded = false;
-      this.InstallmentForm.reset();
-      //informing parent that data has changed
-      this.newData.emit();
-      that.notifier.notify("success" , "Installment successfuly added.");
-    } , error=>{
-      that.beingAdded = false;
-      console.log(error)
-      that.notifier.notify("error" , error.error.error ? error.error.message : error.error.message);
-    })
   }
   ngAfterViewInit() : void {
 
@@ -202,29 +188,6 @@ export class InstallmentsComponent implements AfterViewInit, OnInit  {
   }
   fetchInfo(isFirstTime): void{
     let that = this
-    //dataTable
-    this._financeService.get({order : this.order_id}).subscribe(result=>{
-      console.log("Response from the installments module" , result)
-      that.installmentList =  result;
-      if(isFirstTime)
-        that.dtTrigger.next();
-      else
-          that.rerender();
-        //setting up the edit functionality
-        setTimeout(() => {
-          $("#instlmntTbl tr:has(td)").hover(function(e) {
-              $(this).css("cursor", "pointer");
-              $("#instlmntTbl tr:has(td)").addClass('blur');
-              $(this).removeClass('blur');
-              $(this).addClass('highlight');
-            },
-            function(e) {
-              $("#instlmntTbl tr:has(td)").removeClass('blur highlight');
-          });
-        }, 400);
-    } , error=>{
-      console.log("error from the installment module" , error)
-    })
   }
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
@@ -298,29 +261,6 @@ export class InstallmentsComponent implements AfterViewInit, OnInit  {
 
       //setting up the preloaders/spinners
       this.beingDeletedInstlmnt = true;
-
-      this._financeService
-        .deleteInstlmnt(id , {order_id :this.order_id})
-          .subscribe(resp=>{
-            //fetch the latest data
-            that.fetchInfo(false)
-
-            //informing parent that data has changed
-            that.newData.emit();
-
-            this.notifier.notify("success" , "Installment successfuly deleted.");
-
-
-            //unsetting the preloaders
-            this.beingDeletedInstlmnt = false;
-
-          } , err=>{
-            console.log("Error occured while deleting installment" , err)
-            this.notifier.notify("error" , err.error.error);
-
-            //unsetting the preloaders
-            this.beingDeletedInstlmnt=false;
-          })
     }
     //Edit installment form submit
     editInstallmentFormSubmitted(){
@@ -342,26 +282,6 @@ export class InstallmentsComponent implements AfterViewInit, OnInit  {
         $('#installmentEditModal').modal('hide');
         return;
       }
-
-      //Send the edit request to server
-      this._financeService
-        .update(this.EditInstallmentId , this.updatedValues )
-          .subscribe(resp=>{
-            this.notifier.notify("success" , "Installment has been updated.");
-            this.beingEditFormSubmit = false;
-
-            //installment edit modal open
-            $('#installmentEditModal').modal('hide');
-
-            //Referesh the data as well
-            //informing parent that data has changed
-            this.newData.emit();
-
-          } , err=>{
-            console.log("Installment edit form" , err)
-            this.notifier.notify("error" , err.error.error);
-            this.beingEditFormSubmit = false;
-          })
     }
 
     //Get the updated form control values only

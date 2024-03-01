@@ -13,8 +13,6 @@ import { AlertService } from '@store/services/alert.sevice';
 import { StateService } from '@uirouter/angular';
 import { orderDetailService } from '@store/services/orderDetails.service';
 import { Store } from '@ngrx/store';
-import { State } from '@/Redux/state';
-import { SelectOrder } from '@/Redux/actions/cashOrder.actions';
 
 
 @Component({
@@ -53,7 +51,7 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
     private _orderService : orderService , private notifier : NotifierService ,
     public _permService : PermissionService , private _authService: AuthenticationService,
     private $state : StateService , private _orderDetailService : orderDetailService , 
-    private _alertService : AlertService , private store: Store<State>){
+    private _alertService : AlertService ){
     this.pageData = {
       title: 'Orders',
       loaded: true,
@@ -379,9 +377,7 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
     })
   }
   addBatch(){
-    this.store.dispatch(new SelectOrder(this.orderData ));
     this.$state.go("store.cashorder");
-
   }
 
 }
