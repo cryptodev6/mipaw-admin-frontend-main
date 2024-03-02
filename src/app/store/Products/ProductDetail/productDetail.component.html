@@ -6,7 +6,7 @@
                                       <h1 ><a href="javascript:void(0)" (click)="all()" > {{pageData.title}}</a></h1>
                                       <div class="text-zero top-right-button-container">
 
-                                        <div class="btn-group" *ngIf="(_permService.hasPermission('Products' , 'edit' ) ) || (_permService.hasPermission('Products' , 'delete' ) )">
+                                        <div class="btn-group">
                                             <div class="btn btn-primary btn-lg pl-4 pr-0">
                                             </div>
                                             <button type="button"
@@ -15,8 +15,8 @@
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" uiSref="store.productForm" *ngIf="(_permService.hasPermission('Products' , 'edit' ) )" [uiParams]="{ id: _id  }" >Edit</a>
-                                                <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Products' , 'delete' ) )" (click)="deleteProduct()">Delete</a>
+                                                <a class="dropdown-item" uiSref="store.productForm" [uiParams]="{ id: _id  }" >Edit</a>
+                                                <a class="dropdown-item" href="javascript:void(0)" (click)="deleteProduct()">Delete</a>
                                             </div>
                                         </div>
                                       </div>
@@ -177,13 +177,7 @@
                                  </p>
                                </div>
                                <div class="col-6">
-                                 <ngx-qrcode
-                                   [elementType]="elementType"
-                                   [errorCorrectionLevel]="correctionLevel"
-                                   [value]="value"
-                                   alt="Demo QR Code"
-                                   cssClass="bshadow">
-                                 </ngx-qrcode>
+                                 
                                </div>
                              </div>
 
@@ -213,9 +207,6 @@
                        </div>
                    </div>
 
-                   <!-- Similar products -->
-                   <similarProducts [categories]="(data && data.categories ? data.categories[0].name : '')"></similarProducts>
-                   <!-- end of similar products -->
                </div>
            </div>
        </div>

@@ -30,9 +30,6 @@ import { LandingComponent } from "./landing/landing.component";
 //***************:: SErvices ::************************//
 import { RootAuthenticationService } from "./services/rootauthentication.service"
 
-//****************::Invalid url Module ::**************//
-import { Page404Component} from './Page404/Page404.component';
-
 ///Module Specific
 import {DatePipe} from '@angular/common';
 
@@ -44,8 +41,7 @@ import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
 
 @NgModule({
   declarations: [
-    LandingComponent ,
-    Page404Component
+    LandingComponent
     ],
   imports: [
     BrowserAnimationsModule,

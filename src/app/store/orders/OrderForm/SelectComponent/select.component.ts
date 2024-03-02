@@ -89,7 +89,7 @@ export class SelectComponentForOrder implements AfterViewInit , OnInit , OnChang
     }else if(this.currentModule == "Products")
     {
 
-      this._productService.searchStock(search).subscribe(response=>{
+      this._productService.search(search).subscribe(response=>{
         //pusshing the stock info into the local array
         this.stock = response.inventory;
 

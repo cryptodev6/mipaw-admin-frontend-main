@@ -19,7 +19,7 @@ export class OrderProductsStepComponent implements AfterViewInit , OnInit , OnCh
   @Input() reset : any;
   @Output('remove') removeProductParent = new EventEmitter();
   products : Array<any> = [];
-  serverImagesPath : string = environment.cloudinary.small;
+  serverImagesPath : string = environment.apiUrl+'/assets/';
 
   //making an array for vehicles to track particulars
   selectedVehiclesStock : Array<any> = [];

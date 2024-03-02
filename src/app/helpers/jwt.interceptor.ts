@@ -17,13 +17,8 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   intercept( request : HttpRequest <any> , next : HttpHandler ): Observable <HttpEvent<any>> {
-    //add authorization header with jwt token if available
-    // console.log("In interceptor")
     try {
       let token = this._authService.token
-      // console.log("In interceptor token ::" , token )
-      // console.log("In interceptor token value ::" , jwt_decode(token) , token )
-
       if(token)
       {
         request = request.clone({
@@ -56,23 +51,14 @@ export class JwtInterceptor implements HttpInterceptor {
       return errors.pipe(
         mergeMap((err, count) => {
           let customErrorOccured = false;
-          //In case error is occured because of user
           if(err.url.includes("auth/validate")  || err.url.includes("auth/authenticate")){
             customErrorOccured = true;
           }
-          //defined errors from server then don't try again
           this.customErrorsRange.forEach(errRange => {
-              //Since custom error range has two counterparts
               let rangeArrIncomplete = errRange.split("-");
-
-              //Make sure thayt each element is casted to integer
               rangeArrIncomplete = rangeArrIncomplete.map(errorStatus => (errorStatus));
-
-              //Using helper to fill in the missing elements
               let rangeArrFilled = this.range(parseInt(rangeArrIncomplete[0]) , parseInt(rangeArrIncomplete[1]) );
               if(err.status == 402){
-                console.log("GONNA_SET_TOKEN interceptor.code#264#@#$ "  )
-
                 localStorage.removeItem('currenUser');
                 localStorage.removeItem('access_token');
                 window.location.reload()
@@ -80,8 +66,6 @@ export class JwtInterceptor implements HttpInterceptor {
               if ( rangeArrFilled.includes(err.status) )
                 customErrorOccured = true;
           })
-          // throw error when we've retried ${retryMaxAttempts} number of times and still get an error
-
           if (count === this.retryMaxAttempts || customErrorOccured) {
             return throwError(err);
           }
@@ -98,5 +82,4 @@ export class JwtInterceptor implements HttpInterceptor {
     if(start === end) return [start];
     return [start, ...this.range(start + 1, end)];
   }
-
 }

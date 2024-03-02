@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import {  UIRouterModule  } from "@uirouter/angular";
 
-import { Page404Component} from '@/Page404/Page404.component';
-
-import { LandingComponent } from '@/landing/landing.component';
-
 const states = [
   {
     name : 'store.**' ,

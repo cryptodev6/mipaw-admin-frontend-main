@@ -7,7 +7,6 @@ import { HttpClient , HttpResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { orderDetailService } from '@services/orderDetails.service';
 import { clientService } from '@services/client.service';
-import { PermissionService } from "@services/permissions.service";
 
 @Component({
   selector:"clientDetails",
@@ -20,8 +19,7 @@ export class CLientDetailsComponent  implements OnInit , AfterViewInit ,OnDestro
   @Input() client_id;
   clientData:any;
   rsrcTitle : String = "Clients";
-  constructor(private _orderDetailServices : orderDetailService , private _clientService : clientService , public _permService : PermissionService) {
-
+  constructor(private _orderDetailServices : orderDetailService , private _clientService : clientService ) {
 
   }
 

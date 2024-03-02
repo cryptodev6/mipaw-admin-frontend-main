@@ -1,10 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { ProductComponent } from './Product/product.component';
-import { ProductDetailComponent  } from './ProductDetail/productDetail.component';
-import { ProductFormComponent } from './ProductForm/productForm.component';
-import { CategoryComponent } from './Category/category.component';
 import { UIModule } from '@ui/ui.module';
 
 import { ReactiveFormsModule  } from '@angular/forms';
@@ -16,11 +11,13 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 //*****************:: QR CODE  ::**********************//
 import { NgQrScannerModule } from 'ngx-qr';
 import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
-
-
+import { ProductComponent } from '@store/products/Product/product.component';
+import { ProductDetailComponent } from '@store/products/ProductDetail/productDetail.component';
+import { ProductFormComponent } from '@store/products/ProductForm/productForm.component';
+import { CategoryComponent } from '@store/products/Category/category.component';
 
 @NgModule({
-  declarations: [    ProductComponent , ProductDetailComponent , ProductFormComponent  , CategoryComponent ],
+  declarations: [ ProductComponent , ProductDetailComponent , ProductFormComponent  , CategoryComponent ],
   imports: [
     NotifierModule.withConfig(customNotifierOptions) ,
     CommonModule,

@@ -3,7 +3,6 @@ import { FormBuilder , FormGroup , FormControl ,FormArray  , Validators } from '
 import { clientService } from '@services/client.service';
 declare var $: any;
 import { NotifierService } from "angular-notifier";
-import { PermissionService } from "@services/permissions.service";
 import { StateService } from '@uirouter/angular';
 import { Transition } from "@uirouter/core";
 
@@ -21,7 +20,7 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
 
   constructor(private fb:FormBuilder ,
             private _clientService : clientService , private notifier : NotifierService ,
-            public _permService : PermissionService , private $state : StateService , private trans:Transition ){
+            private $state : StateService , private trans:Transition ){
     this.pageData = {
       title: 'Brand Form',
       loaded: true,

@@ -63,7 +63,7 @@ export class ProductsDetailComponent  implements OnInit , AfterViewInit ,OnDestr
       tempProducts.push(product.product_id)
     })
 
-    this._productServices.viewDetailMultiple({ids:tempProducts})
+    this._productServices.viewDetail({ids:tempProducts})
       .subscribe(
         response =>
         {
@@ -94,8 +94,6 @@ export class ProductsDetailComponent  implements OnInit , AfterViewInit ,OnDestr
           });
 
           that.infoRecieved(temp);
-
-
         },
         error => {
         console.log(error)

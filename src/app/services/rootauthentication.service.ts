@@ -27,10 +27,7 @@ export class RootAuthenticationService {
   }
 
   async logout(){
-      try{   
-      let userLoggedOut = await this.http.post<any>(`${this.uri}/logout` , { token : this.access_token}).toPromise();
-      
-      console.log("User Logout status " , userLoggedOut );
+      try{
       this.access_token = "Bearer ";
       this.currentUserSubject.next(this.access_token);
       //remove user from local storage to log user out
@@ -42,16 +39,29 @@ export class RootAuthenticationService {
   }
   public refreshToken(){
     try{
-      this.access_token = localStorage.getItem('access_token') || "Bearer "
+      this.access_token = localStorage.getItem('access_token') || "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      console.log("Referesh item token " , this.access_token );
       this.currentUserSubject.next(this.access_token)
     }catch(exc){
-      console.log("In root auth service error set Token method" , exc)
+      console.log("Token method" , exc)
     }
-
   }
   public get token()  {
-    return this.currentUserSubject.value
+    return this.currentUserSubject.value;
   }
 
-
+  login(username : string, password : string ){
+    return this.http.post<any>(`${this.uri}/authenticate` , { username , password })
+    .pipe(map( user => {
+      //Login successfull if there's a jwt token in the response
+      if(user && user.token)
+        {
+          //store user details and jwt token in local storage to keep user logged in between page refreshes
+          localStorage.setItem('access_token' , user.token );
+          sessionStorage.setItem('session' , user.session );
+          this.currentUserSubject.next(user)
+        }
+      return user;
+    }))
+  }
 }

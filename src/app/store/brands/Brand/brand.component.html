@@ -4,9 +4,9 @@
 
                     <div class="top-right-button-container">
                         <button type="button" class="btn btn-primary btn-lg top-right-button mr-1" data-toggle="modal"
-                            data-target="#rightModal" *ngIf="(_permService.hasPermission('Clients' , 'add' ) )">ADD NEW</button>
+                            data-target="#rightModal" >ADD NEW</button>
                         <div class="modal fade modal-right" id="rightModal" tabindex="-1" role="dialog"
-                            aria-labelledby="rightModalLabel" aria-hidden="true" *ngIf="(_permService.hasPermission('Clients' , 'add' ) )">
+                            aria-labelledby="rightModalLabel" aria-hidden="true" >
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                   <form [formGroup]="ClientForm" (ngSubmit)="addClient()" class="tooltip-right-top" id="addToDatatableForm" novalidate>

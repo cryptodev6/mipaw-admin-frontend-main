@@ -226,7 +226,7 @@ export class ProductFormComponent implements AfterViewInit , OnInit{
   }
   refreshSelectFromLibrary(flagFirstTime = false){
     let that = this;
-    this._productService.getImages(that.selectFromLibraryFilters).subscribe(resp =>
+    this._productService.get(that.selectFromLibraryFilters).subscribe((resp : any ) =>
       {
         that.prodImages = resp.files;
         //Finding currently active page
@@ -497,7 +497,7 @@ export class ProductFormComponent implements AfterViewInit , OnInit{
 
     //Removing this image from product
     this._productService
-      .removeImage(this.id , img)
+      .remove(this.id )
       .subscribe(
         resp=>{
           //Since the image is remove now adjust the UI

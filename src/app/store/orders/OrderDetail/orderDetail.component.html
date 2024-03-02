@@ -5,10 +5,7 @@
                                   <div class="mb-3">
                                       <h1>{{pageData.title}}</h1>
                                       <div class="text-zero top-right-button-container">
-                                          <!-- <a  uiSref="store.batchForm" [uiParams]="{ id: _id }" class="btn btn-primary btn-lg top-right-button mr-1"
-                                              *ngIf="(_permService.hasPermission('Installment Orders' , 'add' ) )">Add Batch
-                                          </a> -->
-                                          <div class="btn-group" *ngIf="orderData?.order_status != 'complete' && ((_permService.hasPermission('Installment Orders' , 'add' ) ) || (_permService.hasPermission('Order_Assignment' , 'assign_forward' ) ))">
+                                          <div class="btn-group" >
                                               <div class="btn btn-primary btn-lg pl-4 pr-0">
                                                 Actions
                                               </div>
@@ -18,10 +15,10 @@
                                                   <span class="sr-only">Actions</span>
                                               </button>
                                               <div class="dropdown-menu dropdown-menu-right">
-                                                  <a class="dropdown-item" href="javascript:void(0)" (click)="addBatch()" *ngIf="(_permService.hasPermission('Installment Orders' , 'add' ) )" >Add Batch</a>
-                                                  <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Order_Assignment' , 'assign_forward' ) )" (click)="assignOrder()">Assign Order</a>
-                                                  <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Installment Orders' , 'delete' ) )" (click)="deleteOrder()">Delete Order</a>
-                                                  <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Installment Orders' , 'add' ) )" (click)="markComplete()">Mark Complete</a>
+                                                  <a class="dropdown-item" href="javascript:void(0)" (click)="addBatch()">Add Batch</a>
+                                                  <a class="dropdown-item" href="javascript:void(0)" (click)="assignOrder()">Assign Order</a>
+                                                  <a class="dropdown-item" href="javascript:void(0)" (click)="deleteOrder()">Delete Order</a>
+                                                  <a class="dropdown-item" href="javascript:void(0)" (click)="markComplete()">Mark Complete</a>
                                               </div>
                                           </div>
                                       </div>
@@ -132,15 +129,12 @@
                                <!-- First Tab i.e Installments  -->
                                <div class="tab-pane fade show active" id="first" role="tabpanel"
                                    aria-labelledby="first-tab" *ngIf="!orderData?.on_full_payment">
-                                   <installments [order]="orderData" [order_id]="_id" [showForm]="(orderData?.total_amount - orderData?.total_paid)" (dataUpdated)="newData($event)"></installments>
-
                                </div>
                                <!-- End of First Tab -->
 
                                <!-- Second Tab i.e Batches  -->
                                <div class="tab-pane fade" id="second" role="tabpanel"
                                    aria-labelledby="second-tab" *ngIf="!orderData?.on_full_payment">
-                                   <batches [batches]="batches" ></batches>
                                </div>
                                <!-- End of Second Tab -->
 
@@ -152,7 +146,6 @@
 
                                <!-- Start of fourth tab -->
                                <div class="tab-pane fade" id="fourth" role="tabpanel" aria-labelledby="fourth-tab" *ngIf="!orderData?.on_full_payment">
-                                   <guarantorsDetail [ids]="g_ids"></guarantorsDetail>
                                </div>
                                <!-- End of fourth tab -->
 
@@ -167,19 +160,16 @@
 
                                <!-- Start of sixth Tab i.e comments-->
                                <div class="tab-pane fade" id="sixth" role="tabpanel" aria-labelledby="sixth-tab" >
-                                    <orderComments [order_id]="orderData?._id"></orderComments>
                                 </div>
                                <!-- End of sixth Tab -->
 
                                <!-- Start of seventh Tab i.e Waivers -->
                                <div class="tab-pane fade" id="seventh" role="tabpanel" aria-labelledby="seventh-tab" >
-                                    <orderWaivers [order]="orderData" [order_id]="_id" [showForm]="true"></orderWaivers>
                                 </div>
                                <!-- End of seventh Tab -->
 
                                <!-- Start of eight Tab i.e Waivers -->
                                 <div class="tab-pane fade" *ngIf="orderData?.on_full_payment" id="eight" role="tabpanel" aria-labelledby="eight-tab" >
-                                    <orderCRM [order_id]="_id" [client_id]="orderData?.client"></orderCRM>
                                 </div>
                                 <!-- End of eight Tab -->
                             
@@ -305,13 +295,6 @@
                        </div>
                    </div>
 
-                   <!-- Same client other orders -->
-                   <otherOrders  *ngIf="!orderData?.on_full_payment"></otherOrders>
-                   <!-- End of same client other orders -->
-
-                  <!-- similar products -->
-                    <!-- <similarProducts></similarProducts> -->
-                  <!-- end of similar products -->
                </div>
            </div>
        </div>

@@ -4,15 +4,15 @@
 <div class="col-12">
     <h1>{{pageData.title}}</h1>
 
-    <div class="top-right-button-container" *ngIf="(_permService.hasPermission('Clients' , 'edit' ) ) || (_permService.hasPermission('Clients' , 'delete' ) )">
+    <div class="top-right-button-container">
         <div class="btn-group">
             <button type="button" class="btn btn-lg btn-primary dropdown-toggle dropdown-toggle-split"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">Toggle Dropdown</span>
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Clients' , 'edit' ) )" (click)="enableFormFields()">Update</a>
-                <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission('Clients' , 'delete' ) )" (click)="deleteClient()">Delete</a>
+                <a class="dropdown-item" href="javascript:void(0)" (click)="enableFormFields()">Update</a>
+                <a class="dropdown-item" href="javascript:void(0)" (click)="deleteClient()">Delete</a>
             </div>
         </div>
     </div>

@@ -6,8 +6,6 @@ import { FormBuilder , FormGroup  } from '@angular/forms';
 import { orderService } from '@services/order.service';
 import * as Glide from "@assets/js/vendor/glide.min.js";
 import { NotifierService } from "angular-notifier";
-import { PermissionService } from "@services/permissions.service";
-import { OtherOrdersComponent } from "./otherOrders/otherOrders.component";
 import { AuthenticationService } from '@services/authentication.service';
 import { AlertService } from '@store/services/alert.sevice';
 import { StateService } from '@uirouter/angular';
@@ -45,11 +43,8 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
 
   public assignUserAjax : Select2AjaxOptions;
 
-  @ViewChild(OtherOrdersComponent , { static : true} ) thisClientOrders : OtherOrdersComponent;
-
   constructor(private _productService:productService  , private fb:FormBuilder ,
-    private _orderService : orderService , private notifier : NotifierService ,
-    public _permService : PermissionService , private _authService: AuthenticationService,
+    private _orderService : orderService , private notifier : NotifierService , private _authService: AuthenticationService,
     private $state : StateService , private _orderDetailService : orderDetailService , 
     private _alertService : AlertService ){
     this.pageData = {
@@ -167,8 +162,6 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
           }, 3000);
         }
       //Since we have all the core data
-      //We can request otherOrdersComponent to fetch other orders of this client if any
-      that.thisClientOrders && that.thisClientOrders.getOrders(that._id);
 
       this.assigned_to =response[0].assigned_to ? response[0].assigned_to : response[0].created_by;
 

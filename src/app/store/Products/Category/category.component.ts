@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { categoryService } from '@services/category.service';
 import { environment } from '@environments/environment';
 import { FormBuilder , FormGroup , Validators } from '@angular/forms';
-import { PermissionService } from "@services/permissions.service";
 import { asIconPicker }   from "jquery-asIconPicker";
 import { NotifierService } from "angular-notifier";
 import { StateService } from '@uirouter/angular';
@@ -29,7 +28,7 @@ export class CategoryComponent implements AfterViewInit , OnInit{
   public searchBlock : any;
   public dataBlock  :any;
   constructor(private _catService:categoryService  , private fb:FormBuilder ,
-              public _permService : PermissionService , private _notify : NotifierService ,
+              private _notify : NotifierService ,
             private $state : StateService){
     this.totalProducts = 0;
     this.pageData = {

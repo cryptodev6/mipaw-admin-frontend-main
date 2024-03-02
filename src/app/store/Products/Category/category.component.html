@@ -7,7 +7,7 @@
                             <button type="button"
                             class="btn btn-primary btn-lg top-right-button mr-1"
                             data-toggle="modal" data-target=".bd-example-modal-lg"
-                            *ngIf="(_permService.hasPermission(rsrcTitle , 'edit' ) )">
+                            >
                               Add new category
                             </button>
                             <div class="btn-group">
@@ -23,8 +23,8 @@
                                     <span class="sr-only">Toggle Dropdown</span>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="javascript:void(0)" *ngIf="(_permService.hasPermission(rsrcTitle , 'edit' ) && singleSelected())" (click)="editCategory()">Edit</a>
-                                    <button class="dropdown-item" *ngIf="(_permService.hasPermission(rsrcTitle , 'delete' ) && itemSelected)" (click)="deleteCategory()">Delete</button>
+                                    <a class="dropdown-item" href="javascript:void(0)" (click)="editCategory()">Edit</a>
+                                    <button class="dropdown-item" (click)="deleteCategory()">Delete</button>
                                 </div>
                             </div>
                         </div>

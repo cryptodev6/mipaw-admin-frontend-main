@@ -13,8 +13,6 @@ import { HttpClient, HttpResponse } from "@angular/common/http";
 import { environment } from "@environments/environment";
 import { DatePipe } from "@angular/common";
 import { StateService } from "@uirouter/angular";
-import { PermissionService } from "@services/permissions.service";
-
 import { Observable, of, fromEvent } from "rxjs";
 import { AuthenticationService } from "@services/authentication.service";
 import {
@@ -28,8 +26,6 @@ declare var $: any;
 class DataTablesResponse {
   data: any[];
   draw: number;
-  recordsTotal: number;
-  recordsFiltered: number;
 }
 @Component({
   selector: "order",
@@ -62,13 +58,11 @@ export class OrderComponent implements AfterViewInit, OnInit {
     "k--KeyF": this.searchTable,
   };
   dataBeingFetchedFirstTime: Boolean = true;
-  keyPressSubscription: Subscription;
 
   constructor(
     private http: HttpClient,
     private datePipe: DatePipe,
     private $state: StateService,
-    public _permService: PermissionService,
     private _authService: AuthenticationService
   ) {
     this.pageData = {
@@ -79,13 +73,12 @@ export class OrderComponent implements AfterViewInit, OnInit {
           title: "Dashboard",
         },
         {
-          title: "Pending Orders List",
+          title: "Orders List",
         },
       ],
     };
   }
   ngOnInit() {
-    console.log("Key press subscription ", this.keyPressSubscription);
     let that = this;
     //making an array to group data based on clients
     let groupedData = [];
@@ -115,17 +108,11 @@ export class OrderComponent implements AfterViewInit, OnInit {
 
         this.ajaxCallSubscription = that.http
           .post<DataTablesResponse>(
-            environment.apiUrl + "order/datatable",
+            environment.apiUrl + "api/orders/lst",
             dataTablesParameters,
             {}
           )
-          .subscribe((resp) => {
-            // return callback({
-            //   recordsFiltered:resp.recordsFiltered,
-            //   recordsTotal : resp.recordsTotal,
-            //   data : resp.data
-            // });
-            console.log("Whats in response ", resp);
+          .subscribe((resp: any) => {
             //Removing all previous data
             groupedData = [];
 
@@ -136,237 +123,120 @@ export class OrderComponent implements AfterViewInit, OnInit {
 
             //in cse we have no orders
             // console.log(resp , "response")
-            if (resp.recordsTotal == 0 && that.ajaxFirstCall)
+            if (resp.total == 0 && that.ajaxFirstCall) 
+            {
               this.noOrders = true;
-
+            }
             //Ajax will make second and onward calls from this point on
             that.ajaxFirstCall = false;
 
-            for (let i = 0; i < resp.data.length; i++) {
+            for (let i = 0; i < (resp.data || {}).orders.length; i++) {
               //this iteration object
-              let objAtI = resp.data[i];
+              const orders = resp.data.orders;
+              let objAtI = orders[i];
 
               let template = `<a href="javascript:void(0)" style="cursor:pointer;" data='${
-                objAtI._id ? objAtI._id : ""
+                objAtI.order_id ? objAtI.order_id : ""
               }'
                                     class="badge badge-light mb-1 order-detail">
                                     View&nbsp;
                                     <span class="badge badge-light btn_order_loader spinner_${
-                                      objAtI._id
+                                      objAtI.order_id
                                     }" style="display:none;">
                                       <img src="assets/img/spinner.gif" class="btnorderLoader" style="width:10px;"/>
                                     </span>
                                     </a><br>`;
               //Making an id attribute
               // if client exists then client id else order id
-              let idForRow =
-                objAtI.client && objAtI.client._id
-                  ? objAtI.client._id
-                  : objAtI._id;
+              let idForRow = i;
 
               //Check if any order from same client already exists in array or not
-              if (groupedData[idForRow]) {
-                //Order already exists
-                //Handle products
-                //Now up until now we had an order and against each order
-                //We used to have products
-                //But now we have to make changes such that for each order we justhave to append a batch
-                //A batch is an order of a client taken during a session or an instant
-                let products = [];
-                if (objAtI.batches) {
-                  objAtI.batches.map((batch) => {
-                    products = products.concat(batch.products);
-                  });
-                } else {
-                  products = objAtI.products;
-                }
+              //No order exists for this client
+              groupedData[idForRow] = objAtI;
+              groupedData[idForRow].name = "Order#" + objAtI.order_id;
+              //formatting the date
+              groupedData[idForRow].order_date = this.datePipe.transform(
+                objAtI.order_date,
+                "dd.MM.yy hh:mm a"
+              );
+              groupedData[idForRow].allProducts = "";
+              //Now up until now we had an order and against each order
+              //We used to have products
+              //But now we have to make changes such that for each order we justhave to append a batch
+              //A batch is an order of a client taken during a session or an instant
+              let products = objAtI.products.split(",");
 
-                for (let j = 0; j < products.length; j++) {
-                  let tempProd = products[j];
-                  let template = `<a style="cursor:pointer;" data ='${
-                    tempProd.product_id
-                      ? tempProd.product_id._id
-                        ? tempProd.product_id._id
-                        : ""
-                      : ""
-                  }' class="badge badge-light mb-1 product_detail">
-                                          ${
-                                            tempProd.product_id
-                                              ? tempProd.product_id
-                                                  .product_display_name
-                                              : ""
-                                          }&nbsp;
-                                          <span class="badge badge-light">${
-                                            tempProd.quantity
-                                          }</span>
-                                          </a><br>`;
-                  groupedData[idForRow].allProducts += template;
-                }
-
-                //Handle Total Payment
-                groupedData[idForRow].total_amount +=
-                  "<br>" + this.formatMoney(objAtI.total_amount);
-
-                //Handle Total Paid
-                groupedData[idForRow].total_paid +=
-                  "<br>" + this.formatMoney(objAtI.total_paid);
-
-                //Handle last payment time
-                groupedData[idForRow].last_payment_time +=
-                  "<br>" +
-                  this.datePipe.transform(
-                    objAtI.last_payment_time,
-                    "dd.MM.yy hh:mm a"
-                  );
-              } else {
-                //No order exists for this client
-                groupedData[idForRow] = objAtI;
-
-                //formatting the date
-                groupedData[idForRow].last_payment_time =
-                  this.datePipe.transform(
-                    objAtI.last_payment_time,
-                    "dd.MM.yy hh:mm a"
-                  );
-                groupedData[idForRow].allProducts = "";
-                //Now up until now we had an order and against each order
-                //We used to have products
-                //But now we have to make changes such that for each order we justhave to append a batch
-                //A batch is an order of a client taken during a session or an instant
-                let products = [];
-                // console.log("Order info submitted with following info" , objAtI.batches , objAtI.products);
-                if (
-                  objAtI.batches &&
-                  !(objAtI.products && objAtI.products.length > 0)
-                ) {
-                  objAtI.batches.map((batch) => {
-                    products = products.concat(batch.products);
-                  });
-                } else {
-                  products = objAtI.products;
-                }
-
-                for (let j = 0; j < products.length; j++) {
-                  let tempProd = products[j];
-                  let template = `<a style="cursor:pointer;" data ='${
-                    tempProd.product_id
-                      ? tempProd.product_id._id
-                        ? tempProd.product_id._id
-                        : ""
-                      : ""
-                  }' class="badge badge-light mb-1 product_detail">
-                                          ${
-                                            tempProd.product_id
-                                              ? tempProd.product_id
-                                                  .product_display_name
-                                              : ""
-                                          }&nbsp;
-                                          <span class="badge badge-light">${
-                                            tempProd.quantity
-                                          }</span>
-                                          </a><br>`;
-                  groupedData[idForRow].allProducts += template;
-                }
-                //Handle Total Payment
-                groupedData[idForRow].total_amount = this.formatMoney(
-                  objAtI.total_amount
-                );
-
-                //Handle Total Paid
-                groupedData[idForRow].total_paid = this.formatMoney(
-                  objAtI.total_paid
-                );
-
-                //Checking if the client is provided and not deleted etc
-                if (objAtI.client == null) {
-                  groupedData[idForRow].client = {};
-                  //There are two possibilities
-                  //* The order is on full payment
-                  let isOrderOnFullPayment =
-                    groupedData[idForRow].batches.length == 1 &&
-                    groupedData[idForRow].batches[0].on_full_payment == true;
-                  if (isOrderOnFullPayment) {
-                    groupedData[idForRow].client.personal_info = {
-                      name: "Cash Order Id:" + groupedData[idForRow].order_id,
-                      phone: "N/A",
-                    };
-                  } else {
-                    groupedData[idForRow].client.personal_info = {
-                      name: '<span class="text-red">Client Deleted</span>',
-                      phone: "N/A",
-                    };
-                  }
-                  //* The client is deleted
-                }
+              for (let j = 0; j < products.length; j++) {
+                let tempProd = products[j].split("_");
+                let template = `<a style="cursor:pointer;" data ='${tempProd[0]}' 
+                    class="badge badge-light mb-1 product_detail">${tempProd[1]}&nbsp;
+                                  <span class="badge badge-light">1</span>
+                    </a><br>`;
+                groupedData[idForRow].allProducts += template;
               }
+              //Handle Total Payment
+              groupedData[idForRow].total_amount = this.formatMoney(
+                objAtI.total
+              );
 
-              groupedData[idForRow].last_payment_time =
-                groupedData[idForRow].last_payment_time + "";
+              //Handle Total Paid
+              groupedData[idForRow].sub_total = this.formatMoney(
+                objAtI.subtotal
+              );
+
+              //Handle discount
+              groupedData[idForRow].discount = this.formatMoney(
+                objAtI.discount
+              );
+
+              //Handle discount
+              groupedData[idForRow].membership_discount = this.formatMoney(
+                objAtI.membership_discount
+              );
+              //Handle discount
+              groupedData[idForRow].shipping_cost = this.formatMoney(
+                objAtI.shippingCost
+              );
+              //Handle discount
+              groupedData[idForRow].referred_discount = this.formatMoney(
+                objAtI.referred_discount
+              );
+
+              groupedData[idForRow].status = objAtI.status;
+
+              groupedData[idForRow].user_name = objAtI.user_name;
+
               groupedData[idForRow].actions = groupedData[idForRow].actions
                 ? groupedData[idForRow].actions + template
                 : template;
-              //Rating system
-              // "simple-icon-refresh" ,
-              //Since in old system one order had one rating
-              //but now each batch have a rating so we have to handle that as well
-              let iconClass;
-              if (groupedData[idForRow].rating) {
-                //This is old order
-                //We have a criterian that
-                //if rating is one then exclaimation icon
-                //if rating is five then tick icon
-                iconClass =
-                  groupedData[idForRow].rating == 1
-                    ? "simple-icon-exclamation"
-                    : groupedData[idForRow].rating == 5
-                    ? "simple-icon-check"
-                    : false;
-              } else {
-                //This is new architecture order with each batch having rating
-                let sum = groupedData[idForRow].batches.reduce(
-                  (b1, b2) => b1.rating + b2.rating,
-                  0
-                );
-                let batchCount = groupedData[idForRow].batches.length;
-                let average = sum / batchCount;
-                //We have a criterian that
-                //if rating is one then exclaimation icon
-                //if rating is five then tick icon
-                iconClass =
-                  average == 1
-                    ? "simple-icon-exclamation"
-                    : average == 5
-                    ? "simple-icon-check"
-                    : false;
-              }
-              if (groupedData[idForRow].client && iconClass) {
-                groupedData[
-                  idForRow
-                ].client.personal_info.name = `<i class="${iconClass} heading-icon"></i>${groupedData[idForRow].client.personal_info.name}`;
-              }
             }
             //Making normalized array
-            groupedData = Object.keys(groupedData).map((k) => groupedData[k]);
             console.log(
               "Data after manipulation",
-              JSON.parse(JSON.stringify(groupedData))
+              JSON.parse(JSON.stringify(groupedData)),
+              resp
             );
             that.dataBeingFetchedFirstTime = false;
             callback({
-              recordsFiltered: resp.recordsFiltered,
-              recordsTotal: resp.recordsTotal,
+              recordsFiltered: resp.data.recordsFiltered,
+              recordsTotal: resp.data.recordsTotal,
               data: groupedData,
             });
             $("#overlay").hide();
           });
       },
       columns: [
-        { data: "client.personal_info.name" },
-        { data: "client.personal_info.phone" },
+        { data: "name" },
         { data: "allProducts" },
         { data: "total_amount" },
-        { data: "total_paid" },
-        { data: "last_payment_time", className: "" },
+        { data: "sub_total" },
+        { data: "discount" },
+        { data: "membership_discount" },
+        { data: "shipping_cost" },
+        { data: "referred_discount" },
+        { data: "status" },
+        { data: "user_name" },
+        { data: "order_date", className: "" },
         { data: "actions" },
       ],
       language: {
@@ -417,10 +287,7 @@ export class OrderComponent implements AfterViewInit, OnInit {
       api.page.len(parseInt($(this).text())).draw();
     });
     //Page records count
-    console.log(
-      $("#pageCountDatatable span").length,
-      $("#pageCountDatatable span")
-    );
+    console.log("Api info ", api.page.info());
     $("#pageCountDatatable span").html(
       "Displaying " +
         (api.page.info().start + 1) +
@@ -487,7 +354,6 @@ export class OrderComponent implements AfterViewInit, OnInit {
     });
   }
   ngOnDestroy(): void {
-    this.keyPressSubscription.unsubscribe();
     // Do not forget to unsubscribe the event
     this.dtTrigger.unsubscribe();
   }
@@ -594,14 +460,6 @@ export class OrderComponent implements AfterViewInit, OnInit {
 
     // this.rerender();4
     this.dtTrigger.next();
-  }
-
-  printData() {
-    var divToPrint = document.getElementById("printTable");
-    let newWin = window.open("");
-    newWin.document.write(divToPrint.outerHTML);
-    newWin.print();
-    newWin.close();
   }
 
   private searchTable(): void {

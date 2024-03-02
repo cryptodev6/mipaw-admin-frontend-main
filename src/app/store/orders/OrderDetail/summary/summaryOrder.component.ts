@@ -58,7 +58,7 @@ export class SummaryOrderDetailComponent  implements OnInit , AfterViewInit ,OnD
       tempProducts.push(product.product_id)
     })
 
-    this._productServices.viewDetailMultiple({ids:tempProducts})
+    this._productServices.viewDetail({ids:tempProducts})
       .subscribe(
         response =>
         {

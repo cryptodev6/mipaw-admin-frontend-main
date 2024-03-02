@@ -6,7 +6,7 @@ import { environment}  from '@environments/environment';
   providedIn : 'root'
 })
 export class productService{
-  uri =  environment.apiUrl+"product";
+  uri =  environment.apiUrl+"api/products";
 
   constructor(private http:HttpClient){}
   create(formData)
@@ -18,7 +18,7 @@ export class productService{
     return this.http.post<any>(this.uri+"/update/"+_id , formData);
   }
   get(filters){
-    return this.http.post<any>(this.uri+""  , filters);
+    return this.http.get<any>(this.uri+""  , filters);
   }
   getAll(){
     return this.http.get<any>(this.uri+"/all");
@@ -26,43 +26,11 @@ export class productService{
   viewDetail(_id){
     return this.http.get<any>(this.uri+"/"+_id);
   }
-  viewDetailMultiple(ids)
-  {
-    return this.http.post<any>(this.uri+"/multiple/" , ids)
-  }
   search(search){
     return this.http.post<any>(this.uri+"/search"  , search);
-  }
-  //fetch stock and quantity etc with product info
-  searchStock(search){
-    return this.http.post<any>(this.uri+"/searchstock"  , search);
-  }
-
-  fetchLatest(){
-    return this.http.get<any>(this.uri+"/latest");
-  }
-  fetchSimilar(categories){
-    return this.http.post<any>(this.uri+"/similar" , categories);
-  }
-  getImages(filters){
-    return this.http.post<any>(this.uri+"/viewImg" , filters);
-  }
-  getCategories(id)
-  {
-    return this.http.post<any>(this.uri+"/categories/" ,{id : id})
-  }
-  removeImage(_id , imgLabel){
-    return this.http.post<any>(this.uri+"/image/"+_id , {label : imgLabel});
   }
   remove(id)
   {
     return this.http.post<any>(this.uri+"/delete" , {id : id });
   }
-  getFiltered(filters){
-    return this.http.post<any>(this.uri+"/cash-order-products"  , filters);
-  }
-  
-  // getFiltered(filters){
-  //   return this.http.post<any>(this.uri+""  , filters);
-  // } for backup
 }

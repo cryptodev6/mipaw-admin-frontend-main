@@ -7,7 +7,6 @@ import { FormBuilder , FormGroup , Validators } from '@angular/forms';
 import { clientService } from '@services/client.service';
 declare var $: any;
 import { NotifierService } from "angular-notifier";
-import { PermissionService } from "@services/permissions.service";
 import { StateService } from '@uirouter/angular';
 
 class DataTablesResponse{
@@ -32,7 +31,7 @@ export class BrandComponent implements AfterViewInit , OnInit{
 
   constructor(private http:HttpClient , private fb:FormBuilder ,
               private _clientService : clientService , private notifier : NotifierService,
-              public _permService : PermissionService , private $state : StateService){
+              private $state : StateService){
     this.pageData = {
       title: 'All Brands',
       loaded: true,

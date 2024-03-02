@@ -1,13 +1,11 @@
 import {Component , OnInit , ViewChild , AfterViewInit , OnDestroy   , Input  } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PermissionService } from '@services/permissions.service';
 import { productService } from '@services/product.service';
 import { environment } from '@environments/environment';
 import { FormBuilder , FormGroup  } from '@angular/forms';
 import { NotifierService } from "angular-notifier";
 import { StateService} from "@uirouter/angular";
 import * as Glide from "@assets/js/vendor/glide.min.js";
-import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 
 @Component({
   selector : 'productDetail',
@@ -24,13 +22,10 @@ export class ProductDetailComponent implements AfterViewInit , OnInit{
   inventoryInfoExists : boolean = true;
   serverImagesPath : any = environment.cloudinary;
 
-  name = 'Angular 8';
-  elementType = NgxQrcodeElementTypes.URL;
-  correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   value = 'https://www.techiediaries.com/';
 
   constructor(private _productService:productService  , private fb:FormBuilder , private notifier : NotifierService
-    , public _permService : PermissionService, private state: StateService){
+    , private state: StateService){
     this.pageData = {
       title: 'All Products',
       loaded: true,
@@ -47,7 +42,6 @@ export class ProductDetailComponent implements AfterViewInit , OnInit{
 
   }
   ngOnInit(){
-    let that = this ;
     if(this._id)
     {
       this.fetchDetail(this._id);

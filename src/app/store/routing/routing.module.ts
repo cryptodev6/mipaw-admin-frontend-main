@@ -6,23 +6,19 @@ import { Transition } from "@uirouter/core";
 
 
 //=================]]]]>::User Defined Components::<[[[[[=============//
-
 import { MainComponent } from './../main/main.component';
-
-//****************::Product Component::**************//
-import { ProductComponent } from './../Products/Product/product.component';
-import { ProductDetailComponent } from './../Products/ProductDetail/productDetail.component';
-import { ProductFormComponent } from   './../Products/ProductForm/productForm.component';
-import { CategoryComponent } from   '@store/Products/Category/category.component';
 
 //****************::Order Component::****************//
 import { OrderDetailComponent  } from './../orders/OrderDetail/orderDetail.component';
 import { OrderFormComponent } from './../orders/OrderForm/orderForm.component';
 import { OrderComponent} from './../orders/Order/order.component';
-import { Page404Component} from '@/Page404/Page404.component';
 import { BrandComponent } from '@store/brands/Brand/brand.component';
-import { ClientComponent } from '@store/users/Client/client.component';
-import { ClientFormComponent } from '@store/users/ClientForm/clientform.component';
+import { UsersComponent } from '@store/users/User/users.component';
+import { UsersFormComponent } from '@store/users/UserForm/usersform.component';
+import { ProductDetailComponent } from '@store/products/ProductDetail/productDetail.component';
+import { ProductFormComponent } from '@store/products/ProductForm/productForm.component';
+import { ProductComponent } from '@store/products/Product/product.component';
+import { CategoryComponent } from '@store/products/Category/category.component';
 
 //********* States which are protected from general public  ***************//
 const STATES  = [
@@ -89,14 +85,14 @@ const STATES  = [
     {
       name : 'store.clientform' ,
       url : '/clientform/:id' ,
-      component : ClientComponent ,
+      component : UsersComponent ,
       params: {
             id : { squash: true, value: null },
       }
     },{
-      name : 'store.guarantorform' ,
+      name : 'store.usersform' ,
       url : '/guarantorform/:id' ,
-      component : ClientFormComponent ,
+      component : UsersFormComponent ,
       params: {
             id : { squash: true, value: null },
       }
@@ -110,7 +106,7 @@ const STATES  = [
       name : 'store' ,
       url: '',
       component : MainComponent,
-      redirectTo: 'store.dashboard',
+      redirectTo: 'store.order',
       children : [
       ]
     }

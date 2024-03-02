@@ -202,20 +202,6 @@ $notifier-warning-icon-color: #FFF !default;
 	border: 0px !important;
 }
 
-//Print
-// @media print {
-// 	 * { display: none; }
-// 	.isPrinting app-print-layout { display: block; }
-// }
-@media print {
-	:host  {
-	  display: none;
-
-	}
-	footer {
-	  display: none;
-	}
-}
 .bshadow{
   display: flex;
   align-items: center;
