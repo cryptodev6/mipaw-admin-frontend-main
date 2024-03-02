@@ -100,4 +100,43 @@ export class LoginComponent implements OnInit{
         )
   }
 
+  loginMock(){
+    // Hardcoded credentials
+      let hardcodedCred = {
+          email: 'user@user.com',
+          password: 'password'
+      };
+
+      // Mock token for demonstration purposes
+      let mockToken = "mockedToken12345";
+
+      // Check if the form is valid (you might want to remove this if you are hardcoding the login)
+      if(this.loginForm.valid) {
+          // Compare the input with hardcoded credentials
+          if(this.loginForm.value.email === hardcodedCred.email && this.loginForm.value.password === hardcodedCred.password) {
+              console.log("Hardcoded login successful");
+
+              // Simulate response object with token
+              let response = {
+                  token: mockToken
+              };
+
+              localStorage.clear();
+              localStorage.setItem('access_token', response.token);
+
+              // Simulate refreshing tokens
+              this._authService.refreshToken();
+              this._rootAuthService.refreshToken();
+
+              // Redirect to store
+              this._state.go('store');
+          } else {
+              console.error("Hardcoded credentials mismatch");
+              // Implement your logic for failed login
+          }
+      }
+      // The rest of the original login logic should be commented out or removed
+  }
+
+
 }
