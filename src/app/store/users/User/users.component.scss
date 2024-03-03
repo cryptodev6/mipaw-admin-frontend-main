@@ -5,3 +5,11 @@
   color: blue !important;
 
 }
+::ng-deep{
+  tr:hover{
+    cursor: pointer !important;
+  }
+  tr:hover td{
+      background: #ebebeb !important;
+  }
+}

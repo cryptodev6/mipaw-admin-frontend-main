@@ -11,7 +11,6 @@ import { OrderDetailComponent } from './OrderDetail/orderDetail.component';
 import { SummaryOrderDetailComponent } from './OrderDetail/summary/summaryOrder.component';
 
 //Order Details Components
-import { CLientDetailsComponent } from './OrderDetail/clientDetails/clientDetails.component';
 import { ProductsDetailComponent } from './OrderDetail/productsDetail/productsDetail.component';
 import { OrderFormComponent } from './../orders/OrderForm/orderForm.component';
 import { RoutingModule } from './../routing/routing.module';
@@ -26,10 +25,11 @@ import { UtilsModule } from "@utilities/utils.module";
 
 import { ConfirmationPopoverModule } from 'angular-confirmation-popover';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { UserDetailsComponent } from './OrderDetail/userDetails/userDetails.component';
 
 @NgModule({
   declarations: [ SummaryOrderDetailComponent ,OrderComponent , OrderFormComponent, OrderDetailComponent ,
-    CLientDetailsComponent ,ProductsDetailComponent , OrderClientStepComponent , OrderProductsStepComponent , 
+    UserDetailsComponent ,ProductsDetailComponent , OrderClientStepComponent , OrderProductsStepComponent , 
     OrderGuarantorStepComponent  , SelectComponentForOrder , ConfirmOrderComponent ],
   imports: [
     CommonModule ,

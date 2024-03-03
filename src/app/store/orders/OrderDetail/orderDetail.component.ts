@@ -26,7 +26,7 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
   @Input('id') _id : any  ;
   orderData : any;
   g_ids : any;
-  client_id : any;
+  user_id : any;
   products : any;
   productImages : any[]=['image-alternate'];
   batches : any ;
@@ -141,7 +141,7 @@ export class OrderDetailComponent implements AfterViewInit , OnInit{
       //guarantor ids
       that.g_ids = JSON.stringify(temp)
       //client ids
-      that.client_id= response[0].client;
+      that.user_id= response[0].user;
 
       //Ratings
       if(response[0].rating)

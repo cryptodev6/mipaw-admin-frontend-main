@@ -1,8 +1,6 @@
 import {Component , OnInit , ViewChild , AfterViewInit , OnDestroy , Input , Output , EventEmitter  , OnChanges , SimpleChanges} from '@angular/core';
 import { Subject } from 'rxjs';
 import { productService } from '@services/product.service';
-import { clientService } from '@services/client.service';
-import { guarantorsService } from '@services/guarantor.service';
 import { environment } from '@environments/environment';
 import { FormBuilder , FormGroup  } from '@angular/forms';
 import { HttpClient , HttpResponse } from '@angular/common/http';
@@ -27,8 +25,7 @@ export class SelectComponentForOrder implements AfterViewInit , OnInit , OnChang
    stock : any[];
   serverImagesPath : string = environment.cloudinary.small;
 
-  constructor(private _productService:productService , private _guarantorService:guarantorsService ,
-    private _clientService:clientService  , private fb:FormBuilder){
+  constructor(private _productService:productService , private fb:FormBuilder){
     this.pageData = {
       title: 'Select ',
       loaded: true,
@@ -76,16 +73,16 @@ export class SelectComponentForOrder implements AfterViewInit , OnInit , OnChang
     this.toggleLoading();
     if(this.currentModule == "Clients")
     {
-      this._clientService.get(search).subscribe(resp=>{
-        console.log("we have the response of search" , resp)
-        this.entityList = resp.map(function(obj)
-        {
-          return { key0 : obj.personal_info.name , key1 : obj.personal_info.phone ,all : obj }
-        } )
+      // this._clientService.get(search).subscribe(resp=>{
+      //   console.log("we have the response of search" , resp)
+      //   this.entityList = resp.map(function(obj)
+      //   {
+      //     return { key0 : obj.personal_info.name , key1 : obj.personal_info.phone ,all : obj }
+      //   } )
 
-      } , error=>{
-        console.log("we have an eror" , error)
-      })
+      // } , error=>{
+      //   console.log("we have an eror" , error)
+      // })
     }else if(this.currentModule == "Products")
     {
 
@@ -106,14 +103,14 @@ export class SelectComponentForOrder implements AfterViewInit , OnInit , OnChang
       })
     }else if(this.currentModule == "Guarantors")
     {
-      this._guarantorService.search(search).subscribe(response=>{
-        console.log("response after searching" ,response)
-        this.entityList = response.map(function(obj){
-          return {key0 : obj.name , key1 : obj.phone , all: obj}
-        })
-      } , error=>{
-        console.log("error after searchind" , error)
-      })
+      // this._guarantorService.search(search).subscribe(response=>{
+      //   console.log("response after searching" ,response)
+      //   this.entityList = response.map(function(obj){
+      //     return {key0 : obj.name , key1 : obj.phone , all: obj}
+      //   })
+      // } , error=>{
+      //   console.log("error after searchind" , error)
+      // })
     }
   }
   selectEntity(obj , isProductsModule , stock){

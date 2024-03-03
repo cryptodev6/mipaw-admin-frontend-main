@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { HttpClient , HttpResponse } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { FormBuilder , FormGroup , Validators } from '@angular/forms';
-import { clientService } from '@services/client.service';
 declare var $: any;
 import { NotifierService } from "angular-notifier";
 import { StateService } from '@uirouter/angular';
@@ -26,12 +25,11 @@ export class BrandComponent implements AfterViewInit , OnInit{
   dtOptions : DataTables.Settings = {} ;
   dtTrigger: Subject<any> = new Subject();
   pageData : any;
-  ClientForm : FormGroup ;
+  BrandForm : FormGroup ;
   clientList :any[];
 
   constructor(private http:HttpClient , private fb:FormBuilder ,
-              private _clientService : clientService , private notifier : NotifierService,
-              private $state : StateService){
+              private notifier : NotifierService, private $state : StateService){
     this.pageData = {
       title: 'All Brands',
       loaded: true,
@@ -48,7 +46,7 @@ export class BrandComponent implements AfterViewInit , OnInit{
   }
   ngOnInit(){
     let that = this ;
-    this.ClientForm = this.fb.group({
+    this.BrandForm = this.fb.group({
       name: ['' , Validators.required],
       phone: ['' , Validators.required]
       , address: ['']
@@ -67,20 +65,22 @@ export class BrandComponent implements AfterViewInit , OnInit{
         info: false,
         dom: '<"row view-filter"<"col-sm-12"<"float-left"l><"float-right"f><"clearfix">>>t<"row view-pager"<"col-sm-12"<"text-center"ip>>>',
         ajax : (dataTablesParameters: any, callback) =>{
-				that.http.post<DataTablesResponse>(environment.apiUrl+'client/datatable' , dataTablesParameters , { })
-                      .subscribe(resp=>{
-              					console.log(resp , "response in client datatables");
-              					this.clientList = resp.data;
+				that.http.post<DataTablesResponse>(environment.apiUrl+'api/brands' , dataTablesParameters , { })
+                      .subscribe((resp : any)=>{
+                        const data = resp.data.rows.map(row=>{
+                          return {...row , number : 'Brand#'+row.id}
+                        })
+              					this.clientList = data;
 
                         callback({
-                          recordsFiltered:resp.recordsFiltered,
-                          recordsTotal : resp.recordsTotal,
-                          data : resp.data
+                          recordsFiltered:resp.data.count,
+                          recordsTotal : resp.data.count,
+                          data : data
                         });
   					$('#overlay').hide();
   				});
 			   } ,
-         columns : [ {data:'personal_info.name'} , {data : 'personal_info.phone'} , {data: 'personal_info.cnic'} , {data : 'personal_info.father_name'}] ,
+         columns : [ {data:'number'} , {data : 'name'} , {data: 'image_id'} , {data : 'brandImage'}] ,
         language: {
           paginate: {
             first : "<<",
@@ -103,7 +103,7 @@ export class BrandComponent implements AfterViewInit , OnInit{
                 //Json data is actually at first index
                 let data = rData[0];
                 let _id = data._id;
-                that.$state.go('store.clientform' , {id : _id})
+                that.$state.go('store.Brandform' , {id : _id})
               }
           })
           //end of setting
@@ -218,21 +218,6 @@ export class BrandComponent implements AfterViewInit , OnInit{
       let that = this;
       $(".modal-footer .label").hide()
       $(".spinner").show()
-
-      this._clientService.create(this.ClientForm.value).subscribe(response => {
-
-        $("#closebtn").click();
-        $(".modal-footer .label").show()
-        this.notifier.notify("success", "Client Added" );
-        that.rerender();
-        this.ClientForm.reset();
-      } , error =>{
-        $(".spinner").hide()
-        $(".icon .fail").fadeIn()
-        $(".icon .fail").fadeOut()
-        $(".modal-footer .label").show()
-        this.notifier.notify("error", "Failed to add Client!" );
-      } );
     }
     //Initializing the contextv menu
     initContextMenu(){

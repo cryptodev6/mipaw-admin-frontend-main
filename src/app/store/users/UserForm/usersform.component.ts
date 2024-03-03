@@ -1,229 +1,181 @@
-import {Component , OnInit , AfterViewInit} from '@angular/core';
-import { FormBuilder , FormGroup , FormControl ,FormArray  , Validators } from '@angular/forms';
-import { clientService } from '@services/client.service';
+import { Component, OnInit, AfterViewInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  FormControl,
+  FormArray,
+  Validators,
+} from "@angular/forms";
 declare var $: any;
 import { NotifierService } from "angular-notifier";
-import { StateService } from '@uirouter/angular';
+import { StateService } from "@uirouter/angular";
 import { Transition } from "@uirouter/core";
+import { UserService } from "@store/services/user.service";
 
 @Component({
-  selector : 'usersform',
-  templateUrl: './usersform.component.html',
-  styleUrls: ['./usersform.component.scss']
+  selector: "usersform",
+  templateUrl: "./usersform.component.html",
+  styleUrls: ["./usersform.component.scss"],
 })
-export class UsersFormComponent implements OnInit , AfterViewInit{
-  pageData : any;
-  ClientForm : FormGroup ;
-  id : any  ;
-  opInProgress : Boolean = false;
-  updatedValues : any;
+export class UsersFormComponent implements OnInit, AfterViewInit {
+  pageData: any;
+  UserForm: FormGroup;
+  id: any;
+  opInProgress: Boolean = false;
+  updatedValues: any;
 
-  constructor(private fb:FormBuilder ,
-            private _clientService : clientService , private notifier : NotifierService ,
-            private $state : StateService , private trans:Transition ){
+  constructor(
+    private fb: FormBuilder,
+    private _userService: UserService,
+    private notifier: NotifierService,
+    private $state: StateService,
+    private trans: Transition
+  ) {
     this.pageData = {
-      title: 'Client Form',
+      title: "User Form",
       loaded: true,
       breadcrumbs: [
         {
-          title: 'Clients'
-        },
-        {
-          title: 'Client Form'
+          title: "Users",
         }
-      ]
+      ],
     };
-
   }
-  ngOnInit(){
+  ngOnInit() {
     this.id = this.trans.params().id;
-    this.pageData.title = (this.id ? "Update": "Add")+" Client Form";
-
-
-    let that = this ;
-    this.ClientForm = this.fb.group({
-      name: ['' , Validators.required ],
-      phone: ['' , Validators.required ], 
-      address: [''],
-      cnic :['', Validators.required ],
-      father_name :[''],
-      father_cnic:['']
-    })
-
+    const title = (this.id ? "Update" : "Add") + " User Form";
+    this.pageData.breadcrumbs.push({
+        title 
+      }
+    );
+    this.pageData.title = title;
+    this.UserForm = this.fb.group({
+      first_name: ["", [Validators.required , Validators.minLength , Validators.maxLength ]],
+      last_name: ["", [Validators.required , Validators.minLength , Validators.maxLength ]],
+      id: [""],
+      user_type : ["2" , Validators.required],
+      email: ["", [Validators.required , Validators.minLength , Validators.maxLength  , Validators.email]]
+    });
   }
-  ngAfterViewInit(){
-    if(this.id)
-    {
-      this.fetchClientInfo();
+  ngAfterViewInit() {
+    if (this.id) {
+      this.fetchUserInfo();
     }
   }
-  fetchClientInfo(){
-    this._clientService
-      .viewDetail(this.id)
-        .subscribe(
-            resp=>{
-              //Since the data is in the form of array thats why first index is our value
-              resp = resp[0];
+  fetchUserInfo() {
+    this._userService.getById(this.id).subscribe(
+      (resp) => {
+        console.log("FetchUser Info :" , resp);
+        //Since the data is in the form of array thats why first index is our value
+        resp = resp.data;
 
-              //Setting the form values
-              this.ClientForm.patchValue(resp.personal_info);
-              this.ClientForm.disable();
-            } ,
-            error=>{
-              this.notifier.notify("error", error.error.message );
-              console.log("Error occured" , error)
-            })
+        //Setting the form values
+        this.UserForm.patchValue(resp );
+      },
+      (error) => {
+        this.notifier.notify("error", error.error.message);
+        console.log("Error occured", error);
+      }
+    );
   }
-  addClient(){
-      let that = this;
-      this.opInProgress = true;
+  
+  addUser() {
+    let that = this;
+    this.opInProgress = true;
 
-      //In case the form is suppose to update
-      if(this.id)
-        {
-          this.updateClient();
-          return ;
-        }
-      //hide both failed and success idons
-      $(".icon").fadeOut();
+    //In case the form is suppose to update
+    if (this.id) {
+      this.updateUser();
+      return;
+    }
+    //hide both failed and success idons
+    $(".icon").fadeOut();
 
-      this._clientService.create(this.ClientForm.value).subscribe(response => {
-
+    this._userService.create(this.UserForm.value).subscribe(
+      (response) => {
         this.opInProgress = false;
 
         //Success icon show
         $(".icon.success").fadeIn();
-        this.notifier.notify("success", "Client Added" );
-        that.$state.go('store.client' );
-      } , error =>{
-
+        this.notifier.notify("success", "User Added");
+        that.$state.go("store.users");
+      },
+      (error) => {
         this.opInProgress = false;
         //Show failed icon
         $(".icon.fail").fadeIn();
-        console.log("Errro in client form" , error)
-        this.notifier.notify("error", error.error.message );
-      } );
+        console.log("Error in user form", error);
+        this.notifier.notify("error", error.error.message);
+      }
+    );
   }
-  //Method to update client
-  updateClient(){
+  //Method to update user
+  updateUser() {
     //Using component variable to keep track of only the updated values
     this.updatedValues = {};
 
     //Identifying keys to update
-    this.getUpdates(this.ClientForm , this.updatedValues);
+    this.getUpdates(this.UserForm, this.updatedValues);
 
     //Check if there is something to update
-    if( jQuery.isEmptyObject(this.updatedValues)  )
-    {
-      this.notifier.notify("warning" , "Nothing to change.");
+    if (jQuery.isEmptyObject(this.updatedValues)) {
+      this.notifier.notify("warning", "Nothing to change.");
       this.opInProgress = false;
       //Show failed icon
       $(".icon.fail").fadeIn();
-      this.$state.go('store.client');
+      this.$state.go("store.users");
       return;
     }
 
     //Its time to update
     //get the categories selected by the user
-    this._clientService.update(this.id ,  this.updatedValues ).subscribe(resp=>{
-      this.notifier.notify("success", "Client Successfuly updated." );
-      this.$state.go('store.client');
-
-    }
-    , error =>
-    {
-       console.log("error" , error);
-       this.opInProgress = false;
-       this.notifier.notify("error", error.error.message ? error.error.message : error.error.error );
-    } );
+    this._userService.update({...this.updatedValues , id : this.id}).subscribe(
+      (resp) => {
+        this.notifier.notify("success", "User Successfuly updated.");
+        this.$state.go("store.users");
+      },
+      (error) => {
+        console.log("error", error);
+        this.opInProgress = false;
+        this.notifier.notify(
+          "error",
+          error.error.message ? error.error.message : "Something went wrong while deleting user"
+        );
+      }
+    );
   }
-  inpPhone(event)
-    {
-      let keyCode  = event.which;
-      let str = event.target.value;
+  //Get the updated form control values only
+  getUpdates(
+    formItem: FormGroup | FormArray | FormControl,
+    updatedValues,
+    name?: string
+  ) {
+    if (formItem instanceof FormControl) {
+      if (name && formItem.dirty) {
+        if (updatedValues == undefined) updatedValues = [];
+        updatedValues[name] = formItem.value;
+      }
+    } else {
+      for (const formControlName in formItem.controls) {
+        if (formItem.controls.hasOwnProperty(formControlName)) {
+          const formControl = formItem.controls[formControlName];
 
-      if(str.length > 11 && keyCode !=8)
-        {
-          event.preventDefault();
-          return ;
+          if (formControl instanceof FormControl) {
+            this.getUpdates(formControl, updatedValues, formControlName);
+          } else if (
+            formControl instanceof FormArray &&
+            formControl.dirty &&
+            formControl.controls.length > 0
+          ) {
+            updatedValues[formControlName] = [];
+            this.getUpdates(formControl, updatedValues[formControlName]);
+          } else if (formControl instanceof FormGroup && formControl.dirty) {
+            updatedValues[formControlName] = {};
+            this.getUpdates(formControl, updatedValues[formControlName]);
+          }
         }
-
-      //If its not a number prvenet from writing
-      if( keyCode < 48 || keyCode > 57)
-        event.preventDefault();
-
-      if(str.length == 4)
-        event.target.value = str+="-";
-      // console.log(event ,  , "Key code phone")
+      }
     }
-    inputCNIC(event){
-      let keyCode  = event.which;
-      let str = event.target.value;
-
-      if(str.length > 14 && keyCode !=8)
-        {
-          event.preventDefault();
-          return ;
-        }
-
-      //If its not a number prevent from writing
-      if( keyCode < 48 || keyCode > 57)
-        event.preventDefault();
-
-      if(str.length == 5 || str.length == 13 )
-        event.target.value = str+="-";
-      // console.log(event ,  , "Key code phone")
-
-      }
-
-      //Get the updated form control values only
-      getUpdates(formItem: FormGroup | FormArray | FormControl,updatedValues, name?: string) {
-
-        if (formItem instanceof FormControl) {
-          if (name && formItem.dirty) {
-            if(updatedValues == undefined )
-              updatedValues = [];
-            updatedValues[name] = formItem.value;
-          }
-        } else {
-          for (const formControlName in formItem.controls) {
-
-            if (formItem.controls.hasOwnProperty(formControlName)) {
-              const formControl = formItem.controls[formControlName];
-
-              if (formControl instanceof FormControl) {
-                this.getUpdates(formControl, updatedValues , formControlName);
-
-              } else if (
-                formControl instanceof FormArray &&
-                formControl.dirty &&
-                formControl.controls.length > 0
-              ) {
-                updatedValues[formControlName] = [];
-                this.getUpdates(formControl, updatedValues[formControlName]);
-              } else if (formControl instanceof FormGroup && formControl.dirty) {
-                updatedValues[formControlName] = {};
-                this.getUpdates(formControl, updatedValues[formControlName]);
-              }
-            }
-          }
-        }
-      }
-      deleteClient(){
-        this._clientService
-          .remove(this.id)
-            .subscribe(
-                resp=>{
-                  //Client deleted
-                  this.notifier.notify("success", resp.message );
-                } ,
-                error=>{
-                  this.notifier.notify("error", error.error.message );
-                  console.log("Error occured" , error)
-                })
-      }
-
-      enableFormFields(){
-        this.ClientForm.enable();
-      }
+  }
+ 
 }

@@ -41,7 +41,7 @@
     <div class="col-12 col-lg-12">
         <div class="card mb-4">
             <div class="card-body">
-                <form id="exampleForm" [formGroup]="ClientForm" class="tooltip-label-right" (submit)="addClient()" novalidate>
+                <form id="exampleForm" [formGroup]="BrandForm" class="tooltip-label-right" (submit)="addClient()" novalidate>
                     <div class="row col-12">
                       <div class="form-group col-4 position-relative error-l-50">
                           <label>Name</label>
@@ -50,16 +50,16 @@
                       <div class="form-group col-4 position-relative">
                           <label>Phone</label>
                           <input type="text" formControlName = "phone" name="Phone" class="form-control" (keypress)="inpPhone($event)" onpaste="return false;" >
-                          <div *ngIf="ClientForm.controls.phone.invalid && (ClientForm.controls.phone.dirty || ClientForm.controls.phone.touched)"
+                          <div *ngIf="BrandForm.controls.phone.invalid && (BrandForm.controls.phone.dirty || BrandForm.controls.phone.touched)"
                               class="alert alert-danger">
 
-                            <div *ngIf="ClientForm.controls.phone.errors.required">
+                            <div *ngIf="BrandForm.controls.phone.errors.required">
                               Phone is required.
                             </div>
-                            <div *ngIf="ClientForm.controls.phone.errors.minlength">
+                            <div *ngIf="BrandForm.controls.phone.errors.minlength">
                               Phone must be at least 12 characters long.
                             </div>
-                            <div *ngIf="ClientForm.controls.phone.errors.maxlength">
+                            <div *ngIf="BrandForm.controls.phone.errors.maxlength">
                               Phone must be not exceed 12 characters long.
                             </div>
                           </div>
@@ -68,8 +68,8 @@
                       <div class="form-group col-4 position-relative">
                           <label>CNIC</label>
                           <input type="text" formControlName = "cnic" name="CNIC" class="form-control" (keypress)="inputCNIC($event)" onpaste="return false;" >
-                          <div *ngIf="ClientForm.controls.cnic.invalid && (ClientForm.controls.cnic.dirty || ClientForm.controls.cnic.touched)" class="alert alert-danger">
-                            <div *ngIf="ClientForm.controls.cnic.errors.minlength">
+                          <div *ngIf="BrandForm.controls.cnic.invalid && (BrandForm.controls.cnic.dirty || BrandForm.controls.cnic.touched)" class="alert alert-danger">
+                            <div *ngIf="BrandForm.controls.cnic.errors.minlength">
                               CNIC must have at least 13 numbers.
                             </div>
                           </div>
@@ -81,8 +81,8 @@
                       <div class="form-group col-4 position-relative">
                           <label>Father CNIC</label>
                           <input type="text" formControlName = "father_cnic" name="Father CNIC" class="form-control" (keypress)="inputCNIC($event)" onpaste="return false;" >
-                          <div *ngIf="ClientForm.controls.father_cnic.invalid && (ClientForm.controls.father_cnic.dirty || ClientForm.controls.father_cnic.touched)" class="alert alert-danger">
-                            <div *ngIf="ClientForm.controls.father_cnic.errors.minlength">
+                          <div *ngIf="BrandForm.controls.father_cnic.invalid && (BrandForm.controls.father_cnic.dirty || BrandForm.controls.father_cnic.touched)" class="alert alert-danger">
+                            <div *ngIf="BrandForm.controls.father_cnic.errors.minlength">
                               CNIC must have at least 13 numbers.
                             </div>
                           </div>
@@ -92,7 +92,7 @@
                           <textarea class="form-control" rows="2" formControlName = "address" name="jQueryDetail" ></textarea>
                       </div>
                     </div>
-                    <button type="submit" *ngIf="!ClientForm.disabled" [disabled]="!ClientForm.valid" class="btn btn-primary btn-multiple-state" id="btmSubmit">
+                    <button type="submit" *ngIf="!BrandForm.disabled" [disabled]="!BrandForm.valid" class="btn btn-primary btn-multiple-state" id="btmSubmit">
                         <preloader *ngIf="opInProgress"></preloader>
                         <ng-template [ngIf]="!opInProgress">
                           <span class="icon success" data-toggle="tooltip" data-placement="top"

@@ -15,6 +15,7 @@ import { ProductComponent } from '@store/products/Product/product.component';
 import { ProductDetailComponent } from '@store/products/ProductDetail/productDetail.component';
 import { ProductFormComponent } from '@store/products/ProductForm/productForm.component';
 import { CategoryComponent } from '@store/products/Category/category.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [ ProductComponent , ProductDetailComponent , ProductFormComponent  , CategoryComponent ],
@@ -23,11 +24,14 @@ import { CategoryComponent } from '@store/products/Category/category.component';
     CommonModule,
     ReactiveFormsModule ,
     Select2Module ,
+    HttpClientModule,
     RoutingModule,
     NgxSkeletonLoaderModule,
     UIModule,
     NgQrScannerModule,
     NgxQRCodeModule
+  ],
+  providers : [
   ],
   exports : [
   ]

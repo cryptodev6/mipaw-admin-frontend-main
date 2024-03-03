@@ -218,7 +218,7 @@ export class OrderComponent implements AfterViewInit, OnInit {
             );
             that.dataBeingFetchedFirstTime = false;
             callback({
-              recordsFiltered: resp.data.recordsFiltered,
+              recordsFiltered: resp.data.recordsTotal,
               recordsTotal: resp.data.recordsTotal,
               data: groupedData,
             });

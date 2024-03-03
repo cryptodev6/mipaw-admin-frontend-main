@@ -1,6 +1,5 @@
 import {Component , OnInit , AfterViewInit} from '@angular/core';
 import { FormBuilder , FormGroup , FormControl ,FormArray  , Validators } from '@angular/forms';
-import { clientService } from '@services/client.service';
 declare var $: any;
 import { NotifierService } from "angular-notifier";
 import { StateService } from '@uirouter/angular';
@@ -13,13 +12,12 @@ import { Transition } from "@uirouter/core";
 })
 export class BrandFormComponent implements OnInit , AfterViewInit{
   pageData : any;
-  ClientForm : FormGroup ;
+  BrandForm : FormGroup ;
   id : any  ;
   opInProgress : Boolean = false;
   updatedValues : any;
 
-  constructor(private fb:FormBuilder ,
-            private _clientService : clientService , private notifier : NotifierService ,
+  constructor(private fb:FormBuilder , private notifier : NotifierService ,
             private $state : StateService , private trans:Transition ){
     this.pageData = {
       title: 'Brand Form',
@@ -41,7 +39,7 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
 
 
     let that = this ;
-    this.ClientForm = this.fb.group({
+    this.BrandForm = this.fb.group({
       name: ['' , Validators.required ],
       phone: ['' , Validators.required ], 
       address: [''],
@@ -54,25 +52,11 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
   ngAfterViewInit(){
     if(this.id)
     {
-      this.fetchClientInfo();
+      this.fetchBrandInfo();
     }
   }
-  fetchClientInfo(){
-    this._clientService
-      .viewDetail(this.id)
-        .subscribe(
-            resp=>{
-              //Since the data is in the form of array thats why first index is our value
-              resp = resp[0];
-
-              //Setting the form values
-              this.ClientForm.patchValue(resp.personal_info);
-              this.ClientForm.disable();
-            } ,
-            error=>{
-              this.notifier.notify("error", error.error.message );
-              console.log("Error occured" , error)
-            })
+  fetchBrandInfo() {
+    throw new Error('Method not implemented.');
   }
   addClient(){
       let that = this;
@@ -86,23 +70,6 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
         }
       //hide both failed and success idons
       $(".icon").fadeOut();
-
-      this._clientService.create(this.ClientForm.value).subscribe(response => {
-
-        this.opInProgress = false;
-
-        //Success icon show
-        $(".icon.success").fadeIn();
-        this.notifier.notify("success", "Client Added" );
-        that.$state.go('store.client' );
-      } , error =>{
-
-        this.opInProgress = false;
-        //Show failed icon
-        $(".icon.fail").fadeIn();
-        console.log("Errro in client form" , error)
-        this.notifier.notify("error", error.error.message );
-      } );
   }
   //Method to update client
   updateClient(){
@@ -110,7 +77,7 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
     this.updatedValues = {};
 
     //Identifying keys to update
-    this.getUpdates(this.ClientForm , this.updatedValues);
+    this.getUpdates(this.BrandForm , this.updatedValues);
 
     //Check if there is something to update
     if( jQuery.isEmptyObject(this.updatedValues)  )
@@ -122,20 +89,6 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
       this.$state.go('store.client');
       return;
     }
-
-    //Its time to update
-    //get the categories selected by the user
-    this._clientService.update(this.id ,  this.updatedValues ).subscribe(resp=>{
-      this.notifier.notify("success", "Client Successfuly updated." );
-      this.$state.go('store.client');
-
-    }
-    , error =>
-    {
-       console.log("error" , error);
-       this.opInProgress = false;
-       this.notifier.notify("error", error.error.message ? error.error.message : error.error.error );
-    } );
   }
   inpPhone(event)
     {
@@ -208,20 +161,20 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
         }
       }
       deleteClient(){
-        this._clientService
-          .remove(this.id)
-            .subscribe(
-                resp=>{
-                  //Client deleted
-                  this.notifier.notify("success", resp.message );
-                } ,
-                error=>{
-                  this.notifier.notify("error", error.error.message );
-                  console.log("Error occured" , error)
-                })
+        // this._brandService
+        //   .remove(this.id)
+        //     .subscribe(
+        //         resp=>{
+        //           //Client deleted
+        //           this.notifier.notify("success", resp.message );
+        //         } ,
+        //         error=>{
+        //           this.notifier.notify("error", error.error.message );
+        //           console.log("Error occured" , error)
+        //         })
       }
 
       enableFormFields(){
-        this.ClientForm.enable();
+        this.BrandForm.enable();
       }
 }

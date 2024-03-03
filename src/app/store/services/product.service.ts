@@ -24,7 +24,7 @@ export class productService{
     return this.http.get<any>(this.uri+"/all");
   }
   viewDetail(_id){
-    return this.http.get<any>(this.uri+"/"+_id);
+    return this.http.get<any>(this.uri+"/details/"+_id);
   }
   search(search){
     return this.http.post<any>(this.uri+"/search"  , search);

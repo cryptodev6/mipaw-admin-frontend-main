@@ -473,6 +473,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     this.navigationMenu.forEach((nav) => {
       if (nav.sub && nav.sub.length) {
         nav.sub.forEach((n) => {
+          console.log("Route ::" , n.route , currentState );
           if (n.route == currentState) {
             console.log("currently active state and passed state", nav);
             $(".main-menu-link").removeClass("active");

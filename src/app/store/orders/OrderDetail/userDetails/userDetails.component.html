@@ -1,0 +1,38 @@
+<ng-container *ngIf="clientData?.length ; then haveData ; else noData">
+</ng-container>
+<ng-template #noData>
+  <h3 class="text-center">Client is deleted or not found.</h3>
+</ng-template>
+<ng-template #haveData>
+  <table class="table">
+    <tbody>
+      <tr>
+        <th scope="row">Id</th>
+        <td>User#{{userData ? userData[0].personal_info.name : ''}}</td>
+      </tr>
+      <tr>
+        <th scope="row">Email</th>
+        <td>{{userData ? userData[0].personal_info.father_name : ''}}</td>
+      </tr>
+
+      <tr>
+        <th scope="row">First Name</th>
+        <td>{{userData ? userData[0].personal_info.phone : ''}}</td>
+      </tr>
+      <tr>
+        <th scope="row">Last Name</th>
+        <td>{{userData ? userData[0].personal_info.cnic: ''}}</td>
+      </tr>
+      <tr>
+        <th scope="row">Actions</th>
+        <td>{{userData ? userData[0].personal_info.address: ''}}</td>
+      </tr>
+
+      </tbody>
+    </table>
+
+    <div class="text-zero top-right-button-container" >
+      <a uiSref="store.userform" [uiParams]="{id:user_id}" class="btn btn-primary btn-lg top-right-button mr-1 text-white" >Edit
+      </a>
+    </div>
+</ng-template>

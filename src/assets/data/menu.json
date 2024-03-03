@@ -1,16 +1,22 @@
 [
   {
-    "title": "Dashboard",
-    "icon" : "iconsminds-shop-4",
-    "id" : "dashboard",
-    "resource" : "Dashboard",
+    "title": "Users",
+    "icon" : "simple-icon-user",
+    "id" : "users",
+    "resource" : "Users",
     "sub" : [
       {
-          "title" : "Dashboard" ,
+          "title" : "Users" ,
           "icon" : "simple-icon-pie-chart",
-          "route": "store.dashboard",
-          "resource" : "Dashboard"
-      } 
+          "route": "store.users",
+          "resource" : "Users"
+      },
+      {
+        "title" : "Add user",
+        "icon" : "simple-icon-rocket",
+        "route" : "store.userform",
+        "resource" : "Users"
+      }
     ]
   },
   {
@@ -58,17 +64,18 @@
         "resource" : "Installment Orders"
       },
       {
-        "title" : "View users",
-        "icon" : "iconsminds-library",
-        "route" : "store.client",
-        "resource" : "Clients"
+        "title" : "Add brand",
+        "icon" : "simple-icon-pie-chart",
+        "route" : "store.brandform",
+        "resource" : "Brand Form"
       },
       {
-        "title" : "Add user",
-        "icon" : "simple-icon-rocket",
-        "route" : "store.clientform",
-        "resource" : "Clients"
+        "title" : "View Brands",
+        "icon" : "simple-icon-pie-chart",
+        "route" : "store.brand",
+        "resource" : "Brands"
       }
+      
     ]
   }
 ]

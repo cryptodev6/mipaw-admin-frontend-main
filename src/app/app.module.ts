@@ -16,19 +16,14 @@ import { MomentModule } from 'angular2-moment';
 import { NotifierModule , NotifierOptions } from "angular-notifier";
 import { ProgressBarModule } from "angular-progress-bar";
 
+//***************:: Landing ::***************************//
+import { LandingComponent } from './landing/landing.component';
 
 //***************::Helpers ::***************************//
 import { JwtInterceptor } from "@/helpers/jwt.interceptor";
 
 //***************::Notifier options :: *****************//
 import { customNotifierOptions } from "./store/UI/Toaster/notifier";
-
-//***************:: Landing Component :: ***************//
-import { LandingComponent } from "./landing/landing.component";
-
-
-//***************:: SErvices ::************************//
-import { RootAuthenticationService } from "./services/rootauthentication.service"
 
 ///Module Specific
 import {DatePipe} from '@angular/common';

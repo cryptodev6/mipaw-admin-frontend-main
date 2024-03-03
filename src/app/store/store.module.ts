@@ -37,6 +37,8 @@ import { ConfirmationPopoverModule } from 'angular-confirmation-popover';
 import { UIModule } from './UI/ui.module';
 import { BrandsModule } from './brands/brands.module';
 import { UsersModule } from './users/users.module';
+import { HttpClientModule } from '@angular/common/http';
+import { CategoryService } from './services/category.service';
 @NgModule({
   declarations: [
     MainComponent ,
@@ -57,6 +59,7 @@ import { UsersModule } from './users/users.module';
     OrdersModule ,
     UIModule ,
     UsersModule ,
+    HttpClientModule,
     ConfirmationPopoverModule.forRoot({
          confirmButtonType: 'danger', // set defaults here
          focusButton: 'confirm',
@@ -64,6 +67,7 @@ import { UsersModule } from './users/users.module';
   ],
   providers: [
     AuthenticationService,
+    CategoryService,
     DeviceDetectorService,
     AlertService
   ],

@@ -8,29 +8,6 @@
         class="btn btn-primary btn-lg top-right-button mr-1"
         >Add New</a
       >
-      <div class="btn-group" *ngIf="!noOrders">
-        <div class="btn btn-primary btn-lg pl-4 pr-0 filter-button">
-          <i
-            class="glyph-icon glyphicon iconsminds-filter-2"
-            *ngIf="filtersHidden"
-            (click)="toggleFilters(false)"
-          ></i>
-          <i
-            class="glyph-icon glyphicon iconsminds-close"
-            *ngIf="!filtersHidden"
-            (click)="toggleFilters(true)"
-          ></i>
-        </div>
-        <button
-          type="button"
-          class="btn btn-lg btn-primary dropdown-toggle dropdown-toggle-split"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          <span class="sr-only">Toggle Dropdown</span>
-        </button>
-      </div>
     </div>
 
     <nav
@@ -85,7 +62,7 @@
         </div>
         <div class="float-md-right dropdown-as-select" id="pageCountDatatable">
           <span class="text-muted text-small" *ngIf="!dataLengthChanged">
-            {{ numOrders }}</span
+            {{ numOrders }} </span
           >
           <img
             src="assets/img/circle_spinner.webp"

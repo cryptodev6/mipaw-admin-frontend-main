@@ -5,27 +5,23 @@ import { environment}  from '@environments/environment';
 @Injectable({
   providedIn : 'root'
 })
-export class categoryService{
-  uri =  environment.apiUrl+"category";
+export class CategoryService{
+  uri =  environment.apiUrl+"api/categories";
   allCatUri = "assets/data/categories.json";
 
   constructor(private http:HttpClient){}
   create(formData)
   {
     console.log("Sending Data" , formData);
-    return this.http.post<any>(this.uri+"/create" , formData);
+    return this.http.post<any>(this.uri+"/create-category" , formData);
   }
-  update(_id , formData)
+  update(formData)
   {
-    console.log("Updating " , _id , formData);
-    return this.http.post<any>(this.uri+"/update/"+_id , formData);
+    console.log("Updating " , formData , this );
+    return this.http.put<any>(this.uri+"/update-category" , formData);
   }
   getAll(){
-    return this.http.get<any>(this.uri+"/");
-  }
-  //fetch all labels and icons
-  fetchIcons(){
-    return this.http.get<any>(this.allCatUri);
+    return this.http.get<any>(this.uri+"/featured");
   }
   viewDetail(_id){
     return this.http.get<any>(this.uri+"/"+_id);
