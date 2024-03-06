@@ -91,3 +91,8 @@
 .selectr{
   margin-top: 1.0rem;
 }
+::ng-deep{
+  .select2-selection{
+    padding-top: 2px !important;
+  }
+}

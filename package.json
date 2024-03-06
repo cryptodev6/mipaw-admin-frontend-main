@@ -1,7 +1,7 @@
 {
-  "name": "mipaw-admin-panel",
+  "name": "mipaw-admin-frontend",
   "version": "0.0.0",
-  "author": "author@gmail.com",
+  "author": "user@gmail.com",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

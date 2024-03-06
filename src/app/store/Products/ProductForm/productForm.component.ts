@@ -47,18 +47,17 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
   imagesSelected: any = [];
   active: Number;
   colors: color[];
-  colorFileUrl: string = "assets/data/colors.json";
   dropZone: any;
-  fileUploadUrl: string = environment.apiUrl + "product/addImage";
   public select2Options: any;
+  public select2OptionsSingle: any;
   public categories: Array<Select2OptionData>;
-  public selectedCategories: string[];
-  public selectedColors: string[];
-  private previouslySelectedCategories: string[];
+  public groups: Array<Select2OptionData>;
+  public units : any[] = [];
+  public selectedCategories: string[] = [];
+  fileUploadUrl: string = environment.apiUrl + "api/uploads/create";
   serverImagesPath: any = environment.apiUrl + "images";
   updatedValues: any;
   isInProgress: boolean = false;
-
   constructor(
     private _productService: productService,
     private _catService: CategoryService,
@@ -75,24 +74,34 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
 
     this.ProductForm = new FormGroup({
       name: new FormControl("", [Validators.required, Validators.minLength(4)]),
+      product_group_id: new FormControl("", []),
+      barcode: new FormControl("", []),
+      sku: new FormControl("", []),
+      description: new FormControl("", []),
       categories: new FormControl([], [Validators.required]),
-      Images: new FormControl([]),
+      color_id: new FormControl("", [Validators.required]),
+      measurement_unit_id: new FormControl("", [Validators.required]),
+
+      images: new FormControl([]),
       sp: new FormControl("", [Validators.required, Validators.min(1)]),
       pp: new FormControl("", [Validators.required, Validators.min(1)]),
       otherInfo: new FormGroup({
-        model: new FormControl("", [
-          Validators.required,
-          Validators.minLength(4),
-        ]),
         company: new FormControl("", [Validators.required]),
         description: new FormControl("", [Validators.required]),
         colors: new FormControl([]),
         inventory_type: new FormControl("Non Barcoded", [Validators.required]),
         universal_code: new FormControl(""),
-      })
+        sku: new FormControl(""),
+      }),
     });
     //Initializing select 2
     this.select2Options = {
+      width: "100%",
+      allowClear: true,
+      placeholder: "",
+      theme: "bootstrap",
+    };
+    this.select2OptionsSingle = {
       width: "100%",
       allowClear: true,
       placeholder: "",
@@ -100,135 +109,40 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
       theme: "bootstrap",
     };
 
-    //Setting the form values
-    if (this.id) {
-      this.fetchProductInfo();
-    } else {
-      this._catService.getAll().subscribe((resp) => {
-        this.categories = resp;
-      });
-    }
-
     this.inflateData();
-  }
-  fetchProductInfo() {
-    let that = this;
-    //We must have all categories first
-    this._catService.getAll().subscribe((resp) => {
-      this.categories = resp;
-
-      this._productService.viewDetail(this.id).subscribe(
-        (resp) => {
-          console.log("Some information fetched", resp);
-          //Assigning the response to local temmporary JSON response variable
-          this.jsonRsp = resp.product ? resp.product : resp;
-          let invType = resp.other_info
-            ? resp.other_info.inventory_type
-            : resp.product.other_info
-            ? resp.product.other_info.inventory_type
-            : "Non Barcoded";
-          //Setting the form values
-          this.ProductForm.patchValue({
-            name: resp.product,
-            sp: resp.product,
-            pp: resp.product,
-            otherInfo: {
-              model: resp.product,
-              company: resp.product,
-              description: resp.product,
-              inventory_type: invType,
-              universal_code: resp.product,
-            },
-          });
-
-          //setting the ctategories
-          this.selectedCategories = [];
-          (resp.product ? resp.product.categories : resp.categories).forEach(
-            (category) => {
-              this.selectedCategories.push(category.icon);
-            }
-          );
-          this.previouslySelectedCategories = this.selectedCategories;
-
-          //Setting the colors
-          this.selectedColors = [];
-          (resp.product
-            ? resp.product.other_info.colors_available
-            : resp.other_info.colors_available
-          ).forEach((color) => {
-            this.selectedColors.push(color);
-          });
-
-          setTimeout(() => {
-            $(".color-code.undefined").filter(function () {
-              var color = $(this).css("background-color");
-              if (that.selectedColors.indexOf(color) != -1) {
-                //it's a selected color
-                $(this).closest("li").addClass("selected");
-              }
-              return false;
-              // return $(this).closest('li');
-            });
-            $(".list-group-item.undefined.selected")
-              .get(0)
-              .scrollIntoView({ behavior: "smooth" });
-          }, 400);
-
-          //End of color setting
-
-          //Start of images getting section
-          this.imagesSelected = (resp.product ? resp.product : resp).image;
-        },
-        (error) => {
-          this.notifier.notify("error", error.error);
-        }
-      );
-    });
   }
   inflateData() {
     let that = this;
 
     //fetching the colors
     //Colors selectr
-    this._httpSv.getData(this.colorFileUrl).subscribe(
-      (data) => {
+    this._catService.getAllColors().subscribe(
+      (resp) => {
         //The nvaidation menu has been fetched and is in json format
-        console.log("The color array which is fetched ", data);
-        //Check each group and sub group for permission
-        let alteredData = [];
-        data.forEach((color) => {
-          let rgb = that.hexToRGB(color.rgb);
-          alteredData.push({
-            name: color.name,
-            rgb: rgb,
-            isHidden: 0,
-          });
-        });
+        console.log("The color array which is fetched ", resp.data);
+
         // console.log("Altered colors array :: " , alteredData)
-        that.colors = alteredData;
-
-        setTimeout(() => {
-          // let selectr = new Selectr("#selectColor");
-          (<any>$("#selectColor")).selectr({
-            title: "",
-            placeholder: "Search Colors",
-          });
-
-          //styling the clear button
-          $(".reset")
-            .removeClass("btn-sm btn-default")
-            .addClass("btn-primary d-block mt-3");
-          //search functionality
-          $(".selectr .panel-body .form-control").on("keyup", function (event) {
-            let sVal = (<any>event.target).value;
-            that.searchColor(sVal);
-          });
-        }, 0);
+        that.colors = resp.data;
       },
       (err) => {
-        console.log(err);
+        console.log("Error log::" , err);
       }
     );
+
+    //Fetching all categories
+    this._catService.getAll().subscribe((resp) => {
+      this.categories = resp.data;
+    });
+    this._productService.getGroups().subscribe((resp) => {
+      this.groups = resp.data;
+    });
+    this._productService.getColors().subscribe((resp) => {
+      this.colors = resp.data;
+    });
+    this._productService.getMeasurementUnits().subscribe((resp) => {
+      this.units = resp.data;
+    });
+
   }
   ngAfterViewInit(): void {
     let that = this;
@@ -298,7 +212,7 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     let tmpDrp = dropzoneFiles.map((img) => img.uniqueId);
 
     //getting the images from library selected section
-    data.Images = tmpDrp.concat([]);
+    data.images = tmpDrp.concat([]);
 
     //Adding the colors to the form
     let selectedColors = $(".list-group-item.selected");
@@ -307,6 +221,7 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
       const col = selectedColors[index];
       data.otherInfo.colors.push((<any>col.children[0]).style.backgroundColor);
     }
+    console.log('dddddd',data)
 
     //get the categories selected by the user
     this._productService.create(data).subscribe(
@@ -330,11 +245,7 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     //Identifying keys to update
     this.getUpdates(this.ProductForm, this.updatedValues);
 
-    // console.log("Updated values in guarantor form:", this.updatedValues)
-    // return ;
-
     //check if user has edited the product
-
     //getting the dropzone files
     let dropzoneFiles = this.dropZone[0].dropzone.files;
     let tmpDrp = dropzoneFiles.map((img) => img.uniqueId);
@@ -343,7 +254,7 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
 
     //getting the images from library selected section
     if (tmpDrp.concat(tmpSfl).length)
-      this.updatedValues.Images = tmpDrp
+      this.updatedValues.images = tmpDrp
         .concat(tmpSfl)
         .concat(this.imagesSelected);
 
@@ -389,14 +300,6 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     let tempSelectedCategories = this.ProductForm.controls.categories.value.map(
       (elem) => elem.icon
     );
-    // console.log("Categories ::" , this.ProductForm.controls.categories.value );
-    if (
-      JSON.stringify(tempSelectedCategories) !=
-      JSON.stringify(this.previouslySelectedCategories)
-    ) {
-      this.updatedValues.categories =
-        this.ProductForm.controls.categories.value;
-    }
 
     if (jQuery.isEmptyObject(this.updatedValues)) {
       this.notifier.notify("warning", "Nothing to change.");
@@ -425,6 +328,15 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
         return { name: category.text, icon: category.id };
       })
     );
+  }
+  updateGroups($evt) {
+    const id = $evt.data[0].id || '';
+    this.ProductForm.controls.product_group_id.setValue(id);
+  }
+  updateColor($evt) {
+    const id = $evt.data[0].id || '';
+    this.ProductForm.controls.color_id.setValue(id);
+    console.log("Product form " , this.ProductForm.value );
   }
   //helper method from hex to rgb
   hexToRGB(h) {

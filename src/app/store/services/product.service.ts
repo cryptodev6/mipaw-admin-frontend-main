@@ -6,6 +6,9 @@ import { environment}  from '@environments/environment';
   providedIn : 'root'
 })
 export class productService{
+  
+  
+  
   uri =  environment.apiUrl+"api/products";
 
   constructor(private http:HttpClient){}
@@ -23,6 +26,9 @@ export class productService{
   getAll(){
     return this.http.get<any>(this.uri+"/all");
   }
+  getGroups() {
+    return this.http.get<any>(this.uri+"/all-products-groups");
+  }
   viewDetail(_id){
     return this.http.get<any>(this.uri+"/details/"+_id);
   }
@@ -32,5 +38,11 @@ export class productService{
   remove(id)
   {
     return this.http.post<any>(this.uri+"/delete" , {id : id });
+  }
+  getColors() {
+    return this.http.get<any>(this.uri+"/colors");
+  }
+  getMeasurementUnits() {
+    return this.http.get<any>(this.uri+"/get-all-measurement-units");
   }
 }

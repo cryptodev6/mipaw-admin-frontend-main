@@ -6,6 +6,7 @@ import { environment}  from '@environments/environment';
   providedIn : 'root'
 })
 export class CategoryService{
+  
   uri =  environment.apiUrl+"api/categories";
   allCatUri = "assets/data/categories.json";
 
@@ -21,7 +22,7 @@ export class CategoryService{
     return this.http.put<any>(this.uri+"/update-category" , formData);
   }
   getAll(){
-    return this.http.get<any>(this.uri+"/featured");
+    return this.http.get<any>(this.uri+"/sub-categories");
   }
   viewDetail(_id){
     return this.http.get<any>(this.uri+"/"+_id);
@@ -31,5 +32,8 @@ export class CategoryService{
   }
   deleteCategory(ids){
     return this.http.post<any>(this.uri+"/delete" , {ids : ids })
+  }
+  getAllColors() {
+    return this.http.get<any>(this.uri+"/get-all-colors");
   }
 }
