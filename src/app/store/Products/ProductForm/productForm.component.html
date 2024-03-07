@@ -93,11 +93,49 @@
         <div class="form-group col-md-6">
           <label for="inputPassword4">Product Group</label>
           <select2 [options]="select2Options" (valueChanged)="updateGroups($event)" class="groupSelect"
-            [value]="selectedCategories">
+            [value]="selectedGroup">
             <option *ngFor="let group of groups" value="{{ group.id }}" [attr.selected]="">
               {{ group.name }}
             </option>
           </select2>
+          <div *ngIf="
+              ProductForm.controls.product_group_id?.invalid &&
+              (ProductForm.controls.product_group_id.dirty ||
+                ProductForm.controls.product_group_id.touched)
+            " class="alert alert-danger">
+            <div *ngIf="ProductForm.controls.product_group_id.errors.required">
+              A group is required.
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputPassword4">Pet Type</label>
+          <select2 [options]="select2Options" (valueChanged)="updatePetTypes($event)" class="groupSelect"
+            [value]="selectedPetType">
+            <option *ngFor="let types of petTypes" value="{{ types.id }}" [attr.selected]="">
+              {{ types.type }}
+            </option>
+          </select2>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputPassword4">Select Brand</label>
+          <select2 [options]="select2Options" (valueChanged)="updateBrands($event)" class="groupSelect"
+            [value]="selectedPetType">
+            <option *ngFor="let brand of Brands" value="{{ brand.id }}" [attr.selected]="">
+              {{ brand.name }}
+            </option>
+          </select2>
+          <div *ngIf="
+              ProductForm.controls.brand_id.invalid &&
+              (ProductForm.controls.brand_id.dirty ||
+                ProductForm.controls.brand_id.touched)
+            " class="alert alert-danger">
+            <div *ngIf="
+                ProductForm.controls.brand_id.errors.required
+              ">
+              A brand is required.
+            </div>
+          </div>
         </div>
         <div class="form-group col-md-6">
           <label for="inputPassword4">Measurement Unit</label>
@@ -118,7 +156,7 @@
 
         <div class="form-group col-md-6">
           <label for="inputEmail4">Sale Price</label>
-          <input type="number" class="form-control" formControlName="sp" id="salePrice" placeholder="Sale Price" />
+          <input type="number" class="form-control" formControlName="price" id="salePrice" placeholder="Sale Price" />
           <div *ngIf="
               ProductForm.controls.sp?.invalid &&
               (ProductForm.controls.sp.dirty || ProductForm.controls.sp.touched)
@@ -131,106 +169,105 @@
             </div>
           </div>
         </div>
-        <div class="form-group col-md-6">
-          <label for="inputPassword4">Purchase Price</label>
-          <input data-role="tagsinput" type="number" formControlName="pp" class="form-control" id="purchasePrice"
-            placeholder="Purchase Price" />
-          <div *ngIf="
-              ProductForm.controls.pp?.invalid &&
-              (ProductForm.controls.pp.dirty || ProductForm.controls.pp.touched)
-            " class="alert alert-danger">
-            <div *ngIf="ProductForm.controls.pp.errors.required">
-              Purchase price is required.
+      </div>
+
+      <div class="form-row">
+        <div class="col-md-12">
+          <div class="form-row"></div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Height</label>
+              <input type="text" class="form-control" formControlName="high" id="high" placeholder="high" />
             </div>
-            <div *ngIf="ProductForm.controls.pp.errors.min">
-              Purchase price must be at least 1.
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Length</label>
+              <input type="text" class="form-control" formControlName="long" id="long" placeholder="long" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Width</label>
+              <input type="number" class="form-control" formControlName="width" id="width" placeholder="width" />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Order Lever</label>
+              <input type="number" class="form-control" formControlName="order_level" id="order_level"
+                placeholder="order_level" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Weight</label>
+              <input type="text" class="form-control" formControlName="weight" id="weight" placeholder="weight" />
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Stock</label>
+              <input type="number" class="form-control" formControlName="stock" id="stock" placeholder="stock" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputPassword4">status</label>
+              <select class="custom-select" formControlName="status">
+                <option [value]="1" [attr.selected]="">Active</option>
+                <option [value]="0" [attr.selected]="">InActive</option>
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Discount</label>
+              <input type="number" class="form-control" formControlName="discount" id="discount" placeholder="discount" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="inputPassword4">Best Seller</label>
+              <select class="custom-select" formControlName="bestseller">
+                <option [value]="1" [attr.selected]="">Yes</option>
+                <option [value]="0" [attr.selected]="">No</option>
+              </select>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputEmail4">Tax</label>
+              <input type="number" class="form-control" formControlName="tax" id="tax" placeholder="tax" />
+            </div>
+          </div>
+
+          <div class="form-row row">
+            <div class="form-group col-md-8">
+              <label for="inputAddress">Description</label>
+              <textarea class="form-control" rows="12" required id="description" formControlName="description"
+                placeholder="Description"></textarea>
+              <div class="invalid-tooltip">Details are required!</div>
+              <div *ngIf="
+                    ProductForm['controls']?.description
+                      ?.invalid &&
+                    (ProductForm['controls']?.description
+                      ?.dirty ||
+                      ProductForm['controls']?.description
+                        ?.touched)
+                  " class="alert alert-danger">
+                <div *ngIf="
+                      ProductForm['controls']?.description
+                        ?.errors?.required
+                    ">
+                  Description is required.
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 form-row">
+              <div class="form-group col-12">
+                <label for="inputPassword4">Color</label>
+                <select2 [options]="select2Options" (valueChanged)="updateColor($event)" class="colorSelect"
+                  [value]="selectedColor">
+                  <option *ngFor="let color of colors" value="{{ color.id }}" [attr.selected]="">
+                    {{ color.color }}
+                  </option>
+                </select2>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <input type="text" class="form-control" id="images" formControlName="images" placeholder="Images"
-        style="display: none" />
-      <!--Specifivally for vehicles -->
-      <form formGroupName="otherInfo">
-        <div class="form-row">
-          <div class="col-md-12">
-            <div class="form-row">
-              <div class="form-group col-md-3">
-                <label for="inputPassword4">Company</label>
-                <input data-role="tagsinput" type="text" formControlName="company" class="form-control" id="company"
-                  placeholder="Company" />
-                <div *ngIf="
-                    ProductForm.get('otherInfo')['controls']?.company
-                      ?.invalid &&
-                    (ProductForm.get('otherInfo')['controls']?.company?.dirty ||
-                      ProductForm.get('otherInfo')['controls']?.company
-                        ?.touched)
-                  " class="alert alert-danger">
-                  <div *ngIf="
-                      ProductForm.controls?.otherInfo?.get('company')[
-                        'controls'
-                      ]?.errors?.required
-                    ">
-                    Company is required.
-                  </div>
-                </div>
-              </div>
-              <div class="form-group col-md-3">
-                <label for="inputPassword4">Product Inventory type</label>
-                <select name="inventory_type" formControlName="inventory_type" class="custom-select">
-                  <option value="Barcoded">Barcodable</option>
-                  <option value="Non Barcoded">Non Barcodable</option>
-                </select>
-              </div>
-              <div class="form-group col-md-3">
-                <label for="inputPassword4">SKU</label>
-                <input data-role="tagsinput" type="text" formControlName="sku" class="form-control"
-                  id="sku" placeholder="Universal Code" />
-              </div>
-              <div class="form-group col-md-3">
-                <label for="inputPassword4">Product Code</label>
-                <input data-role="tagsinput" type="text" formControlName="universal_code" class="form-control"
-                  id="universal_code" placeholder="Universal Code" />
-              </div>
-            </div>
-            <div class="form-row row">
-              <div class="form-group col-md-8">
-                <label for="inputAddress">Description</label>
-                <textarea class="form-control" rows="12" required id="description" formControlName="description"
-                  placeholder="Description"></textarea>
-                <div class="invalid-tooltip">Details are required!</div>
-                <div *ngIf="
-                    ProductForm.get('otherInfo')['controls']?.description
-                      ?.invalid &&
-                    (ProductForm.get('otherInfo')['controls']?.description
-                      ?.dirty ||
-                      ProductForm.get('otherInfo')['controls']?.description
-                        ?.touched)
-                  " class="alert alert-danger">
-                  <div *ngIf="
-                      ProductForm.get('otherInfo')['controls']?.description
-                        ?.errors?.required
-                    ">
-                    Description is required.
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3 form-row">
-                <div class="form-group col-12">
-                  <label for="inputPassword4">Color</label>
-                  <select2 [options]="select2Options" (valueChanged)="updateColor($event)" class="colorSelect"
-                    [value]="selectedColor">
-                    <option *ngFor="let color of colors" value="{{ color.id }}" [attr.selected]="">
-                      {{ color.color }}
-                    </option>
-                  </select2>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
       <!--End of Vehicle specific info -->
 
       <button type="submit" class="btn btn-primary d-block mt-3">
@@ -240,4 +277,3 @@
     </form>
   </div>
 </div>
-

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Select2Module , Select2OptionData } from 'ng2-select2';
-import { NgxPrintModule } from 'ngx-print';
 
 import { UIModule } from '@ui/ui.module';
 import { DataTablesModule } from 'angular-datatables';
@@ -38,7 +37,6 @@ import { UserDetailsComponent } from './OrderDetail/userDetails/userDetails.comp
     RoutingModule ,
     Select2Module ,
     UIModule ,
-    NgxPrintModule ,
     UtilsModule,
     NgSelectModule ,
     FormsModule ,

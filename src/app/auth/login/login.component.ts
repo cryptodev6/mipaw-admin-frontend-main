@@ -83,7 +83,15 @@ export class LoginComponent implements OnInit {
       //Refereshing root auth's service token as well
       this._rootAuthService.refreshToken();
       console.log("Ok i am leaving");
-      this._state.go("store");
+      let _self = this;
+      setTimeout(() => {
+        // _self._state.go("store" ,  null, {'reload':true});
+        _self._state.transitionTo('store', {
+          param: 'some parameter'
+        }, {
+            reload : true
+        });
+      }, 100);
     } catch (exc) {
       console.error("Exception occured login", exc);
     }

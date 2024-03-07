@@ -86,7 +86,12 @@ export class BrandFormComponent implements OnInit , AfterViewInit{
       this.opInProgress = false;
       //Show failed icon
       $(".icon.fail").fadeIn();
-      this.$state.go('store.client');
+      // this.$state.go('store.client');
+      this.$state.transitionTo('store.client', {
+        param: 'some parameter'
+      }, {
+          reload : true
+      });
       return;
     }
   }

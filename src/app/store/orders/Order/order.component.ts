@@ -257,7 +257,13 @@ export class OrderComponent implements AfterViewInit, OnInit {
     //Product click functionality
     (<any>$)(".product_detail").click(function (event) {
       let _id = event.target.attributes.data.nodeValue;
-      that.$state.go("store.productdetail", { id: _id });
+      // that.$state.go("store.productdetail", { id: _id });
+      this.$state.transitionTo('store.productdetail', {
+        // param: 'some parameter'
+        id: _id
+      }, {
+          reload : true
+      });
     });
     //Checkbox functionality
     // that.unCheckAllRows();
@@ -349,7 +355,12 @@ export class OrderComponent implements AfterViewInit, OnInit {
       (<any>dtInstance).on("click", "tbody tr .order-detail", function () {
         console.log("Whats this ", (<any>$)(this).attr("data"));
         let order_id = (<any>$)(this).attr("data");
-        that.$state.go("store.orderdetail", { id: order_id });
+        // that.$state.go("store.orderdetail", { id: order_id });
+        that.$state.transitionTo('store.orderdetail', {
+          id: order_id
+        }, {
+            reload : true
+        });
       });
     });
   }
@@ -410,8 +421,13 @@ export class OrderComponent implements AfterViewInit, OnInit {
   showProductDetail(event, obj) {
     let _id = event.target.attributes.data.nodeValue;
     console.log("State is ::", obj.$state, "Id is", _id);
-    this.$state.go("store.productdetail", { id: _id });
+    // this.$state.go("store.productdetail", { id: _id });
     console.log("on show detail", _id);
+    this.$state.transitionTo('store.productdetail', {
+      id: _id
+    }, {
+        reload : true
+    });
   }
   formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
     try {

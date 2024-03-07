@@ -39,7 +39,12 @@ export class LandingComponent implements AfterViewInit {
           }
           this._authService.refreshToken();
         }
-        this.$state.go("store.dashboard");
+        // this.$state.go("store.dashboard");
+        this.$state.transitionTo('store', {
+          param: 'some parameter'
+        }, {
+            reload : true
+        });
         setTimeout(() => {
           if (urlParts.length > 1) {
             let route = urlParts[1] || "";
@@ -51,7 +56,13 @@ export class LandingComponent implements AfterViewInit {
       },
       (err) => {
         console.log("Error occured while validating", err);
-        this.$state.go("login");
+        this.$state.go("login" , { } , { reload : true});
+
+        // this.$state.transitionTo('login', {
+        //   param: 'some parameter'
+        // }, {
+        //     reload : true
+        // });
       }
     );
   }

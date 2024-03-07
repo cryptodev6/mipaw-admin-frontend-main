@@ -103,7 +103,12 @@ export class BrandComponent implements AfterViewInit , OnInit{
                 //Json data is actually at first index
                 let data = rData[0];
                 let _id = data._id;
-                that.$state.go('store.Brandform' , {id : _id})
+                // that.$state.go('store.Brandform' , {id : _id})
+                this.$state.transitionTo('store.Brandform', {
+                  id : _id
+                }, {
+                    reload : true
+                });
               }
           })
           //end of setting

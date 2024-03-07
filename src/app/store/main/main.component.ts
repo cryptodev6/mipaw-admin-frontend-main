@@ -71,7 +71,12 @@ export class MainComponent implements OnInit, AfterViewInit {
     //clear token in auth service as well
     await this._rootAuthService.logout();
     await this._authService.logout();
-    this.$state.go("login");
+    // this.$state.go("login");
+    this.$state.transitionTo('login', {
+      param: 'some parameter'
+    }, {
+        reload : true
+    });
     console.log("Signing out");
   }
 

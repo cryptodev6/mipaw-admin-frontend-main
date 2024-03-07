@@ -29,6 +29,12 @@ export class productService{
   getGroups() {
     return this.http.get<any>(this.uri+"/all-products-groups");
   }
+  getPetTypes() {
+    return this.http.get<any>(this.uri+"/all-pets-types");
+  }
+  getBrands() {
+    return this.http.get<any>(this.uri+"/all-brands");
+  }
   viewDetail(_id){
     return this.http.get<any>(this.uri+"/details/"+_id);
   }

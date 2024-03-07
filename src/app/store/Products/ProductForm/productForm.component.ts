@@ -52,8 +52,13 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
   public select2OptionsSingle: any;
   public categories: Array<Select2OptionData>;
   public groups: Array<Select2OptionData>;
-  public units : any[] = [];
+  public petTypes: Array<Select2OptionData>;
+  public Brands: Array<Select2OptionData>;
+  public units: any[] = [];
   public selectedCategories: string[] = [];
+  public selectedGroup: string[] = [];
+  public selectedPetType: string[] = [];
+  public selectedBrands: string[] = [];
   fileUploadUrl: string = environment.apiUrl + "api/uploads/create";
   serverImagesPath: any = environment.apiUrl + "images";
   updatedValues: any;
@@ -67,32 +72,33 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     private _httpSv: HttpService,
     private _authService: AuthenticationService,
     private trans: Transition
-  ) {}
+  ) { }
   ngOnInit() {
     this.id = this.trans.params().id;
     this.title = (this.id ? "Update" : "Add") + " Product Form";
 
     this.ProductForm = new FormGroup({
-      name: new FormControl("", [Validators.required, Validators.minLength(4)]),
-      product_group_id: new FormControl("", []),
+      product_group_id: new FormControl("", [Validators.required]),
       barcode: new FormControl("", []),
       sku: new FormControl("", []),
-      description: new FormControl("", []),
-      categories: new FormControl([], [Validators.required]),
+      name: new FormControl("", [Validators.required, Validators.minLength(4)]),
       color_id: new FormControl("", [Validators.required]),
-      measurement_unit_id: new FormControl("", [Validators.required]),
-
-      images: new FormControl([]),
-      sp: new FormControl("", [Validators.required, Validators.min(1)]),
-      pp: new FormControl("", [Validators.required, Validators.min(1)]),
-      otherInfo: new FormGroup({
-        company: new FormControl("", [Validators.required]),
-        description: new FormControl("", [Validators.required]),
-        colors: new FormControl([]),
-        inventory_type: new FormControl("Non Barcoded", [Validators.required]),
-        universal_code: new FormControl(""),
-        sku: new FormControl(""),
-      }),
+      measurement_unit_id: new FormControl("", []),
+      pet_type: new FormControl("", []),
+      price: new FormControl("", [Validators.required, Validators.min(1)]),
+      categories: new FormControl([], [Validators.required]),
+      high: new FormControl("", []),
+      long: new FormControl("", []),
+      width: new FormControl("", []),
+      weight: new FormControl("", [Validators.required]),
+      stock: new FormControl("", [Validators.required]),
+      status: new FormControl(1, []),
+      discount: new FormControl("", []),
+      bestseller: new FormControl(0, []),
+      brand_id: new FormControl("", [Validators.required]),
+      tax: new FormControl("", []),
+      order_level: new FormControl("", []),
+      description: new FormControl("", [Validators.required])
     });
     //Initializing select 2
     this.select2Options = {
@@ -123,9 +129,12 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
 
         // console.log("Altered colors array :: " , alteredData)
         that.colors = resp.data;
+        if(that.colors && that.colors.length > 0){
+          this.ProductForm.controls.color_id.setValue((that.colors[0] as any).id);
+        }
       },
       (err) => {
-        console.log("Error log::" , err);
+        console.log("Error log::", err);
       }
     );
 
@@ -135,12 +144,24 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     });
     this._productService.getGroups().subscribe((resp) => {
       this.groups = resp.data;
+      if(resp.data && resp.data.length > 0){
+        this.ProductForm.controls.product_group_id.setValue((resp.data[0] as any).id);
+      }
     });
-    this._productService.getColors().subscribe((resp) => {
-      this.colors = resp.data;
+    this._productService.getPetTypes().subscribe((resp) => {
+      this.petTypes = resp.data;
+      if(resp.data && resp.data.length > 0){
+        this.ProductForm.controls.pet_type.setValue((resp.data[0] as any).id);
+      }
+    });
+    this._productService.getBrands().subscribe((resp) => {
+      this.Brands = resp.data;
     });
     this._productService.getMeasurementUnits().subscribe((resp) => {
       this.units = resp.data;
+      if(resp.data && resp.data.length > 0){
+        this.ProductForm.controls.measurement_unit_id.setValue((resp.data[0] as any).id);
+      }
     });
 
   }
@@ -162,10 +183,11 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
           });
           this.on("success", function (file, responseText) {
             that.notifier.notify("success", "File Uploaded.");
+            console.log("File uploaded" , file , responseText );
             let count = that.dropZone[0].dropzone.files.length;
             for (let i = 0; i < count; i++) {
               if (that.dropZone[0].dropzone.files[i].name == file.name) {
-                that.dropZone[0].dropzone.files[i].uniqueId = responseText.id;
+                that.dropZone[0].dropzone.files[i].uniqueId = responseText.data.id;
               }
             }
             that.isInProgress = false;
@@ -181,20 +203,15 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
       });
     }
   }
-  ngOnDestroy(): void {}
-  searchProducts(event: any): void {}
+  ngOnDestroy(): void { }
+  searchProducts(event: any): void { }
   formSubmitted() {
-    if (this.ProductForm.invalid || this.colorsLength() == 0) {
+    console.log("Product form is valid" , this.ProductForm.valid , this.ProductForm.value );
+    
+    if (this.ProductForm.invalid ) {
       Object.keys(this.ProductForm.controls).forEach((key) => {
         this.ProductForm.controls[key].markAsDirty();
       });
-      Object.keys((<any>this.ProductForm.controls.otherInfo).controls).forEach(
-        (key) => {
-          (<any>this.ProductForm.controls.otherInfo).controls[
-            key
-          ].markAsDirty();
-        }
-      );
       return;
     }
     //Showing spinner
@@ -206,23 +223,20 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     }
     //making a json object to send
     let data = this.ProductForm.value;
-
+    console.log("Product form current value" , data );
     //getting the dropzone files
     let dropzoneFiles = this.dropZone[0].dropzone.files;
     let tmpDrp = dropzoneFiles.map((img) => img.uniqueId);
 
     //getting the images from library selected section
     data.images = tmpDrp.concat([]);
+    if(data.images.length == 0){
+      this.notifier.notify("error", "Please upload atleast one image");
 
-    //Adding the colors to the form
-    let selectedColors = $(".list-group-item.selected");
-    data.otherInfo.colors = [];
-    for (let index = 0; index < selectedColors.length; index++) {
-      const col = selectedColors[index];
-      data.otherInfo.colors.push((<any>col.children[0]).style.backgroundColor);
+      return;
     }
-    console.log('dddddd',data)
-
+    console.log("Whats in images" , data);
+    data.image_default_id = data.images[0];
     //get the categories selected by the user
     this._productService.create(data).subscribe(
       (resp) => {
@@ -231,7 +245,7 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
         this.isInProgress = false;
       },
       (error) => {
-        console.log("error", error.error.message);
+        console.log("error", error);
         this.notifier.notify("error", error.error.message);
         this.isInProgress = false;
       }
@@ -258,31 +272,8 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
         .concat(tmpSfl)
         .concat(this.imagesSelected);
 
-    //In case we have to adjust otherInfo
-    let flagOtherInfo = false;
-
-    if (
-      (<any>$)("#selectColor").val().length ||
-      (this.updatedValues.otherInfo &&
-        (this.updatedValues.otherInfo.model ||
-          this.updatedValues.otherInfo.company ||
-          this.updatedValues.otherInfo.colors))
-    ) {
-      if (this.updatedValues.otherInfo == undefined)
-        this.updatedValues.otherInfo = {};
-      this.updatedValues.otherInfo.model = (<any>(
-        this.ProductForm.controls.otherInfo
-      )).controls.model.value;
-      this.updatedValues.otherInfo.company = (<any>(
-        this.ProductForm.controls.otherInfo
-      )).controls.company.value;
-      this.updatedValues.otherInfo.inventory_type = (<any>(
-        this.ProductForm.controls.otherInfo
-      )).controls.inventory_type.value;
-      flagOtherInfo = true;
-    }
     //Getting the colors
-    if ((<any>$)("#selectColor").val().length || flagOtherInfo) {
+    if ((<any>$)("#selectColor").val().length) {
       //Since user has selected some color
       this.updatedValues.colors = [];
 
@@ -330,13 +321,33 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     );
   }
   updateGroups($evt) {
+    $evt.data[0] = $evt.data[0] || {id : null};
     const id = $evt.data[0].id || '';
+    const name = $evt.data[0].name || '';
     this.ProductForm.controls.product_group_id.setValue(id);
+    this.selectedGroup = name;
+  }
+  updatePetTypes($evt) {
+    $evt.data[0] = $evt.data[0] || {id : null}
+    const id = $evt.data[0].id || '';
+    const type = $evt.data[0].type || '';
+    this.ProductForm.controls.pet_type.setValue(id);
+    this.selectedPetType = type;
+  }
+  updateBrands($evt) {
+    $evt.data[0] = $evt.data[0] || {id : null}
+
+    const id = $evt.data[0].id || '';
+    const name = $evt.data[0].name || '';
+    this.ProductForm.controls.brand_id.setValue(id);
+    this.selectedBrands = name;
   }
   updateColor($evt) {
+    $evt.data[0] = $evt.data[0] || {id : null}
+
     const id = $evt.data[0].id || '';
     this.ProductForm.controls.color_id.setValue(id);
-    console.log("Product form " , this.ProductForm.value );
+    console.log("Product form ", this.ProductForm.value);
   }
   //helper method from hex to rgb
   hexToRGB(h) {
