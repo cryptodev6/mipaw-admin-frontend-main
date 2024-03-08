@@ -31,6 +31,13 @@ interface color {
   name: string;
   rgb: string;
 }
+interface IMAGE {
+  image_id : string ;
+  mime : string ;
+  order_level : number
+  path : string
+}
+
 @Component({
   selector: "productForm",
   templateUrl: "./productForm.component.html",
@@ -50,19 +57,22 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
   dropZone: any;
   public select2Options: any;
   public select2OptionsSingle: any;
-  public categories: Array<Select2OptionData>;
   public groups: Array<Select2OptionData>;
   public petTypes: Array<Select2OptionData>;
   public Brands: Array<Select2OptionData>;
   public units: any[] = [];
-  public selectedCategories: string[] = [];
   public selectedGroup: string[] = [];
   public selectedPetType: string[] = [];
   public selectedBrands: string[] = [];
   fileUploadUrl: string = environment.apiUrl + "api/uploads/create";
-  serverImagesPath: any = environment.apiUrl + "images";
+  serverImagesPath: any = environment.apiUrl + "images/";
   updatedValues: any;
   isInProgress: boolean = false;
+  selectedImages: IMAGE[];
+  mySubject = new Subject();
+  counter = 0;
+  beingFetched: boolean;
+
   constructor(
     private _productService: productService,
     private _catService: CategoryService,
@@ -74,31 +84,40 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     private trans: Transition
   ) { }
   ngOnInit() {
+    let _self = this;
     this.id = this.trans.params().id;
     this.title = (this.id ? "Update" : "Add") + " Product Form";
-
+    if(this.id){
+      this.mySubject.subscribe({
+        next: value => {
+            // Check if the counter is at the third value
+            this.counter++;
+            if (_self.counter > 4) {
+              _self.getProductDetails();
+            }
+        }
+    });
+    }
     this.ProductForm = new FormGroup({
       product_group_id: new FormControl("", [Validators.required]),
       barcode: new FormControl("", []),
       sku: new FormControl("", []),
       name: new FormControl("", [Validators.required, Validators.minLength(4)]),
-      color_id: new FormControl("", [Validators.required]),
+      color_id: new FormControl("", []),
       measurement_unit_id: new FormControl("", []),
       pet_type: new FormControl("", []),
       price: new FormControl("", [Validators.required, Validators.min(1)]),
-      categories: new FormControl([], [Validators.required]),
       high: new FormControl("", []),
       long: new FormControl("", []),
       width: new FormControl("", []),
-      weight: new FormControl("", [Validators.required]),
+      weigth: new FormControl("", [Validators.required]),
       stock: new FormControl("", [Validators.required]),
       status: new FormControl(1, []),
       discount: new FormControl("", []),
       bestseller: new FormControl(0, []),
       brand_id: new FormControl("", [Validators.required]),
       tax: new FormControl("", []),
-      order_level: new FormControl("", []),
-      description: new FormControl("", [Validators.required])
+      order_level: new FormControl("", [])
     });
     //Initializing select 2
     this.select2Options = {
@@ -117,6 +136,24 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
 
     this.inflateData();
   }
+  async getProductDetails() {
+    try{
+      if(this.beingFetched){
+        return ;
+      }
+      this.beingFetched = true;
+      let productDetails = await this._productService.getDetails(this.id).toPromise();
+      productDetails = productDetails.data;
+      const { images , ...attributes} = productDetails;
+      this.selectedImages = images;
+      this.ProductForm.patchValue(this._productService.mapObject(attributes) );
+      console.log("Product details" , productDetails );
+    }catch(error){
+      console.log("An error occired" , error )
+    }
+    this.beingFetched = false;
+
+  }
   inflateData() {
     let that = this;
 
@@ -124,12 +161,14 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     //Colors selectr
     this._catService.getAllColors().subscribe(
       (resp) => {
+        that.mySubject.next("");
+
         //The nvaidation menu has been fetched and is in json format
         console.log("The color array which is fetched ", resp.data);
 
         // console.log("Altered colors array :: " , alteredData)
         that.colors = resp.data;
-        if(that.colors && that.colors.length > 0){
+        if(!that.id && that.colors && that.colors.length > 0){
           this.ProductForm.controls.color_id.setValue((that.colors[0] as any).id);
         }
       },
@@ -138,28 +177,30 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
       }
     );
 
-    //Fetching all categories
-    this._catService.getAll().subscribe((resp) => {
-      this.categories = resp.data;
-    });
     this._productService.getGroups().subscribe((resp) => {
-      this.groups = resp.data;
-      if(resp.data && resp.data.length > 0){
-        this.ProductForm.controls.product_group_id.setValue((resp.data[0] as any).id);
-      }
+        that.mySubject.next("");
+        this.groups = resp.data;
+        if(!that.id && resp.data && resp.data.length > 0){
+          this.ProductForm.controls.product_group_id.setValue((resp.data[0] as any).id);
+        }
     });
     this._productService.getPetTypes().subscribe((resp) => {
+        that.mySubject.next("");
+
       this.petTypes = resp.data;
-      if(resp.data && resp.data.length > 0){
+      if(!that.id && resp.data && resp.data.length > 0){
         this.ProductForm.controls.pet_type.setValue((resp.data[0] as any).id);
       }
     });
     this._productService.getBrands().subscribe((resp) => {
+        that.mySubject.next("");
+
       this.Brands = resp.data;
     });
     this._productService.getMeasurementUnits().subscribe((resp) => {
+        that.mySubject.next("");
       this.units = resp.data;
-      if(resp.data && resp.data.length > 0){
+      if(!that.id && resp.data && resp.data.length > 0){
         this.ProductForm.controls.measurement_unit_id.setValue((resp.data[0] as any).id);
       }
     });
@@ -203,10 +244,12 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
       });
     }
   }
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void { 
+    this.selectedImages = [];
+  }
   searchProducts(event: any): void { }
   formSubmitted() {
-    console.log("Product form is valid" , this.ProductForm.valid , this.ProductForm.value );
+    console.log("Product form is valid" , this.ProductForm.valid , this.ProductForm.value , this.id );
     
     if (this.ProductForm.invalid ) {
       Object.keys(this.ProductForm.controls).forEach((key) => {
@@ -237,7 +280,6 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     }
     console.log("Whats in images" , data);
     data.image_default_id = data.images[0];
-    //get the categories selected by the user
     this._productService.create(data).subscribe(
       (resp) => {
         this.notifier.notify("success", "Product Successfuly added.");
@@ -272,34 +314,16 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
         .concat(tmpSfl)
         .concat(this.imagesSelected);
 
-    //Getting the colors
-    if ((<any>$)("#selectColor").val().length) {
-      //Since user has selected some color
-      this.updatedValues.colors = [];
-
-      //Adding the colors to the form
-      let selectedColors = $(".list-group-item.selected");
-      for (let index = 0; index < selectedColors.length; index++) {
-        const col = selectedColors[index];
-        this.updatedValues.colors.push(
-          (<any>col.children[0]).style.backgroundColor
-        );
-      }
-    }
-
-    //Checking the categories
-    let tempSelectedCategories = this.ProductForm.controls.categories.value.map(
-      (elem) => elem.icon
-    );
-
     if (jQuery.isEmptyObject(this.updatedValues)) {
       this.notifier.notify("warning", "Nothing to change.");
       this.state.go("store.product");
       return;
     }
-
-    //get the categories selected by the user
-    this._productService.update(this.id, this.updatedValues).subscribe(
+    console.log("Update form submission " , this.id , ">>>>" , this.updatedValues , "----", this.imagesSelected , "<<<<<", this.selectedImages);
+    let images : any[] = (this.selectedImages || []).concat(this.imagesSelected || []);
+    images = images.map((image : any )=>(image.image_id || image.unique_id || image.id));
+    const image_default_id = images.length ? images[0] : -1;
+    this._productService.update(this.id, {...this.ProductForm.value , images , image_default_id  }).subscribe(
       (resp) => {
         this.isInProgress = false;
         this.notifier.notify("success", "Product Successfuly updated.");
@@ -307,18 +331,29 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
         this.state.go("store.product");
       },
       (error) => {
+        let errors = (error && error.error && error.error.error) ? error.error.error : [];
+        console.log("Error" , error.error.error )
+        // Beautified error message
+        let errorMessage = "Validation errors:\n";
+        console.log("::::" , errors );
+        errors = this.isIterable(errors) ? errors : [];
+        console.log("::::>" , errors );
+
+        errors.forEach(error => {
+            errorMessage += `${error.path}: ${error.msg}\n`;
+        });
         this.isInProgress = false;
         console.log("error", error.error.message);
-        this.notifier.notify("error", error.error.message);
+        this.notifier.notify("error", (typeof error.error.error == 'string') ? error.error.error : errorMessage);
       }
     );
   }
-  updateCategories($evt) {
-    this.ProductForm.controls.categories.setValue(
-      $evt.data.map((category) => {
-        return { name: category.text, icon: category.id };
-      })
-    );
+  isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
   }
   updateGroups($evt) {
     $evt.data[0] = $evt.data[0] || {id : null};
@@ -391,16 +426,24 @@ export class ProductFormComponent implements AfterViewInit, OnInit {
     return $(".list-group-item.selected").length;
   }
 
-  removeImage(img, event) {
+  removeImage(id, event) {
     let elem = event.target;
+    console.log("Whats in images selected" , this.selectedImages.length );
+    let dropzoneFiles = this.dropZone[0].dropzone.files;
+    const totalImages = (this.selectedImages || []).concat(dropzoneFiles || []);
+    console.log("Total images" , totalImages );
+    if(totalImages.length == 1){
+      this.notifier.notify("error", "You need to add another image before you can delete this image");
+      return ;
+    }
     //Filtering local array
     this.imagesSelected = this.imagesSelected.filter(
-      (iteratingImg) => img != iteratingImg
+      (iteratingImg) => id != iteratingImg.image_id
     );
     this.isInProgress = true;
-
+    
     //Removing this image from product
-    this._productService.remove(this.id).subscribe(
+    this._productService.removeImage({product_id : this.id , image_id : id }).subscribe(
       (resp) => {
         //Since the image is remove now adjust the UI
         $(elem).closest(".cardImgParent").fadeOut();

@@ -14,11 +14,11 @@
     <form [formGroup]="ProductForm" (ngSubmit)="formSubmitted()">
       <!--Start of product images section -->
       <!--Product edit mode previous images -->
-      <div class="row list disable-text-selection" data-check-all="checkAll" *ngIf="id && imagesSelected.length">
-        <div class="col-xl-2 col-lg-2 col-6 col-sm-4 mb-4 cardImgParent" *ngFor="let img of imagesSelected">
+      <div class="row list disable-text-selection" data-check-all="checkAll" *ngIf="id && selectedImages?.length">
+        <div class="col-xl-2 col-lg-2 col-6 col-sm-4 mb-4 cardImgParent" *ngFor="let img of selectedImages">
           <div class="card">
             <div class="position-relative">
-              <a href="Pages.Product.Detail.html"><img class="card-img-top" src="{{ serverImagesPath + img }}"
+              <a href="Pages.Product.Detail.html"><img class="card-img-top" src="{{ serverImagesPath + img.path }}"
                   alt="Card image cap" /></a>
             </div>
             <div class="card-body">
@@ -26,7 +26,7 @@
                 <div class="col-12">
                   <div class="d-flex justify-content-center">
                     <a class="btn-link delete-library-item sfl-delete-item" href="javascript:void(0)"
-                      (click)="removeImage(img, $event)">
+                      (click)="removeImage(img.image_id , $event)">
                       <i class="simple-icon-trash"></i>
                     </a>
                   </div>
@@ -70,30 +70,12 @@
             </div>
           </div>
         </div>
-        <div class="form-group col-md-6">
-          <label for="inputPassword4">Categories</label>
-          <select2 [options]="select2Options" (valueChanged)="updateCategories($event)" class="catSelect"
-            [value]="selectedCategories">
-            <option *ngFor="let op of categories" value="{{ op.id }}" [attr.selected]="">
-              {{ op.title }}
-            </option>
-          </select2>
-          <div *ngIf="
-              ProductForm.controls.categories?.invalid &&
-              (ProductForm.controls.categories.dirty ||
-                ProductForm.controls.categories.touched)
-            " class="alert alert-danger">
-            <div *ngIf="ProductForm.controls.categories.errors.required">
-              A category is required.
-            </div>
-          </div>
-        </div>
       </div>
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="inputPassword4">Product Group</label>
           <select2 [options]="select2Options" (valueChanged)="updateGroups($event)" class="groupSelect"
-            [value]="selectedGroup">
+            [value]="ProductForm.controls.product_group_id">
             <option *ngFor="let group of groups" value="{{ group.id }}" [attr.selected]="">
               {{ group.name }}
             </option>
@@ -111,7 +93,7 @@
         <div class="form-group col-md-6">
           <label for="inputPassword4">Pet Type</label>
           <select2 [options]="select2Options" (valueChanged)="updatePetTypes($event)" class="groupSelect"
-            [value]="selectedPetType">
+            [value]="ProductForm.controls.pet_type">
             <option *ngFor="let types of petTypes" value="{{ types.id }}" [attr.selected]="">
               {{ types.type }}
             </option>
@@ -120,7 +102,7 @@
         <div class="form-group col-md-6">
           <label for="inputPassword4">Select Brand</label>
           <select2 [options]="select2Options" (valueChanged)="updateBrands($event)" class="groupSelect"
-            [value]="selectedPetType">
+            [value]="ProductForm.controls.brand_id">
             <option *ngFor="let brand of Brands" value="{{ brand.id }}" [attr.selected]="">
               {{ brand.name }}
             </option>
@@ -198,7 +180,18 @@
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="inputEmail4">Weight</label>
-              <input type="text" class="form-control" formControlName="weight" id="weight" placeholder="weight" />
+              <input type="text" class="form-control" formControlName="weigth" id="weight" placeholder="weight" />
+              <div *ngIf="
+              ProductForm.controls.weigth.invalid &&
+              (ProductForm.controls.weigth.dirty ||
+                ProductForm.controls.weigth.touched)
+            " class="alert alert-danger">
+            <div *ngIf="
+                ProductForm.controls.weigth.errors.required
+              ">
+              Weight is required.
+            </div>
+          </div>
             </div>
             <div class="form-group col-md-6">
               <label for="inputEmail4">Stock</label>
@@ -207,7 +200,7 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="inputPassword4">status</label>
+              <label for="inputPassword4">Status</label>
               <select class="custom-select" formControlName="status">
                 <option [value]="1" [attr.selected]="">Active</option>
                 <option [value]="0" [attr.selected]="">InActive</option>
@@ -233,32 +226,11 @@
           </div>
 
           <div class="form-row row">
-            <div class="form-group col-md-8">
-              <label for="inputAddress">Description</label>
-              <textarea class="form-control" rows="12" required id="description" formControlName="description"
-                placeholder="Description"></textarea>
-              <div class="invalid-tooltip">Details are required!</div>
-              <div *ngIf="
-                    ProductForm['controls']?.description
-                      ?.invalid &&
-                    (ProductForm['controls']?.description
-                      ?.dirty ||
-                      ProductForm['controls']?.description
-                        ?.touched)
-                  " class="alert alert-danger">
-                <div *ngIf="
-                      ProductForm['controls']?.description
-                        ?.errors?.required
-                    ">
-                  Description is required.
-                </div>
-              </div>
-            </div>
             <div class="col-md-3 form-row">
               <div class="form-group col-12">
                 <label for="inputPassword4">Color</label>
                 <select2 [options]="select2Options" (valueChanged)="updateColor($event)" class="colorSelect"
-                  [value]="selectedColor">
+                  [value]="ProductForm.controls.color_id">
                   <option *ngFor="let color of colors" value="{{ color.id }}" [attr.selected]="">
                     {{ color.color }}
                   </option>

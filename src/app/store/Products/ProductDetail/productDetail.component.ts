@@ -26,7 +26,7 @@ export class ProductDetailComponent implements AfterViewInit, OnInit {
   otherInfo: any; //needed it for product detail etc
   ProductForm: FormGroup;
   active: Number;
-  serverImagesPath: any = environment.apiUrl;
+  serverImagesPath: any = environment.apiUrl+'images/';
 
   constructor(
     private _productService: productService,

@@ -32,7 +32,7 @@ export class ProductComponent implements AfterViewInit, OnInit {
   active: Number;
   pagination: Number[];
   selectedProduct: any;
-  serverImagesPath: string = environment.apiUrl;
+  serverImagesPath: string = environment.apiUrl+'images/';
   rsrcTitle: String = "Products";
   noProducts: Boolean = false;
 
